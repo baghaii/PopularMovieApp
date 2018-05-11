@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class MovieData {
 
-  private static final String BASE_PATH = " http://image.tmdb.org/t/p/w185/";
+  private static final String BASE_PATH = "http://image.tmdb.org/t/p/w185/";
 
   @SerializedName("title")
   private String mTitle;
