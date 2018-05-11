@@ -3,6 +3,9 @@ package com.sepidehmiller.popularmoviesapp;
 import com.google.gson.annotations.SerializedName;
 
 public class MovieData {
+
+  private static final String BASE_PATH = " http://image.tmdb.org/t/p/w185/";
+
   @SerializedName("title")
   private String mTitle;
 
@@ -17,9 +20,6 @@ public class MovieData {
 
   @SerializedName("overview")
   private String mOverview;
-
-
-  //http://blog.nkdroidsolutions.com/how-to-parsing-json-array-using-gson-in-android-tutorial/
 
   public MovieData(String title, String releaseDate, double voteAverage, String posterPath, String overview) {
     mTitle = title;
@@ -47,5 +47,9 @@ public class MovieData {
 
   public double getVoteAverage() {
     return mVoteAverage;
+  }
+
+  public String getSmallPosterUrl() {
+    return BASE_PATH + getPosterPath();
   }
 }
