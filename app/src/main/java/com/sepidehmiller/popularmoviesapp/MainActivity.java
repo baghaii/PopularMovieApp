@@ -1,14 +1,20 @@
 package com.sepidehmiller.popularmoviesapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -21,16 +27,15 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements MovieAPIResults.DataAcquiredListener  {
 
   //TODO - Use RatingBar on DetailActivity
 
   private static final String TAG = "MainActivity";
-  private static final String API_KEY = "insert api key here";
-  private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
+  private static final String MOVIE_DATA = "MovieData";
+  private static final String SORT_ORDER = "SortOrder";
+  private SharedPreferences mSharedPreferences;
 
   private String mSortOrder="popular";
 
@@ -38,30 +43,42 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
   private RecyclerView mRecyclerView;
 
 
-  // The default imagery used in this app comes from
-  // https://www.pexels.com/photo/board-cinema-cinematography-clapper-board-274937/
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+    mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-    //Chapter 18 p 327 of Android Programming: Big Nerd Ranch Guide 2 ed
-    mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+    mRecyclerView = findViewById(R.id.recycler_view);
+
+    /*
+      How do you determine phone orientation in code?
+      https://stackoverflow.com/questions/2795833/check-orientation-on-android-phone#2799001 */
+
+    if (getResources().getConfiguration().orientation ==
+        Configuration.ORIENTATION_PORTRAIT) {
+
+      /*
+          Chapter 18 p 327 of Android Programming: Big Nerd Ranch Guide 2 ed for setting
+          RecyclerView GridLayoutManager.
+       */
+
+      mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+    } else {
+      mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+    }
+
     mMovieAdapter = new MovieAdapter(new ArrayList<MovieData>());
     mRecyclerView.setAdapter(mMovieAdapter);
 
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build();
+    Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
 
-    MovieAPIInterface movieAPIInterface = retrofit.create(MovieAPIInterface.class);
+    callAPI(call);
 
-    Call<MovieAPIResults> call = movieAPIInterface.getMovieData(mSortOrder, API_KEY);
+  }
 
+  public void callAPI(Call<MovieAPIResults> call) {
     // Call the API Asynchronously
     call.enqueue(new Callback<MovieAPIResults>() {
 
@@ -80,36 +97,100 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
         Log.e(TAG, t.getMessage());
       }
     });
-
   }
 
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu, menu);
+
+    MenuItem popular = menu.getItem(0);
+    MenuItem top_rated = menu.getItem(1);
+
+    if (mSharedPreferences.contains(SORT_ORDER)) {
+      String sort = mSharedPreferences.getString(SORT_ORDER, NetworkUtils.POPULAR);
+
+      if (sort.contentEquals(NetworkUtils.TOP_RATED)) {
+        mSortOrder = NetworkUtils.TOP_RATED;
+        top_rated.setChecked(true);
+      } else {
+        mSortOrder = NetworkUtils.POPULAR;
+        popular.setChecked(true);
+      }
+
+      Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
+      callAPI(call);
+    }
+
+    return true;
+  }
+
+  public boolean onOptionsItemSelected(MenuItem item) {
+    Call<MovieAPIResults> call;
+    SharedPreferences.Editor editor = mSharedPreferences.edit();
+    switch(item.getItemId()) {
+      case R.id.menu_item_popular:
+        toggleMenuOption(item);
+        mSortOrder = NetworkUtils.POPULAR;
+        editor.putString(SORT_ORDER, mSortOrder);
+        editor.apply();
+        call = NetworkUtils.buildAPICall(mSortOrder);
+        callAPI(call);
+        return true;
+      case R.id.menu_item_top_rated:
+        toggleMenuOption(item);
+        mSortOrder = NetworkUtils.TOP_RATED;
+        editor.putString(SORT_ORDER, mSortOrder);
+        editor.apply();
+        call = NetworkUtils.buildAPICall(mSortOrder);
+        callAPI(call);
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  public void toggleMenuOption(MenuItem item) {
+    if (item.isChecked()) {
+      item.setChecked(false);
+    } else {
+      item.setChecked(true);
+    }
+  }
 
   // The adapter and holder classes were informed by examples in Chapter 24 of the book mentioned
   // above.
 
   private class MovieHolder extends RecyclerView.ViewHolder {
-    private ImageButton mImageButton;
+    private final ImageButton mImageButton;
 
     public MovieHolder(View itemView) {
       super(itemView);
 
-      mImageButton = (ImageButton) itemView.findViewById(R.id.list_item_movie_button);
+      mImageButton = itemView.findViewById(R.id.list_item_movie_button);
 
     }
 
-    public void bindDrawable(Drawable drawable, String url) {
+    public void bindDrawable(Drawable drawable, final MovieData movie) {
 
+      /*
+        The placeholder imagery used in this app comes from
+        https://www.pexels.com/photo/board-cinema-cinematography-clapper-board-274937/ */
+
+      // https://stackoverflow.com/questions/20823249/resize-image-to-full-width-and-fixed-height-with-picasso
       Picasso.get()
-          .load(url)
+          .load(movie.getSmallPosterUrl())
           .fit()
+          .centerCrop()
           .placeholder(drawable)
           .into(mImageButton);
 
-      //TODO - Create an Intent. Pass Data to it.
+      //Create an Intent.
       mImageButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          Intent i = new Intent();
+          Intent i = new Intent(getApplicationContext(), DetailActivity.class);
+          i.putExtra(MOVIE_DATA, movie);
+          startActivity(i);
         }
       });
     }
@@ -134,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
     @Override
     public void onBindViewHolder(@NonNull MovieHolder holder, int position) {
       Drawable placeholder = getResources().getDrawable(R.drawable.cinema);
-      holder.bindDrawable(placeholder, mMovies.get(position).getSmallPosterUrl());
+      holder.bindDrawable(placeholder, mMovies.get(position));
     }
 
     @Override
@@ -146,6 +227,13 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
       mMovies = movies;
     }
   }
+
+  /*
+     This is part of the design pattern where we have created an
+     MovieAPIResults.DataAcquiredListener interface and implemented
+     that interface here to listen for the asynchronous task to return.
+   */
+
 
   @Override
   public void onMovieDataAcquired(List<MovieData> movies) {
