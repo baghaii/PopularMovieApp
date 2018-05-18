@@ -13,4 +13,15 @@ public interface MovieAPIInterface {
     @Query("api_key") String apiKey
   );
 
+
+  @GET("{id}/videos")
+  Call<VideoResults> getVideoData(
+    @Query("api_key") String apiKey
+  );
+
+  @GET("{id}/reviews")
+  Call<ReviewResults> getReviewData(
+      @Query("api_key") String apiKey
+  );
+
 }

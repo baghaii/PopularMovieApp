@@ -30,8 +30,6 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements MovieAPIResults.DataAcquiredListener  {
 
-  //TODO - Use RatingBar on DetailActivity
-
   private static final String TAG = "MainActivity";
   private static final String MOVIE_DATA = "MovieData";
   private static final String SORT_ORDER = "SortOrder";
@@ -160,14 +158,23 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
   // The adapter and holder classes were informed by examples in Chapter 24 of the book mentioned
   // above.
 
-  private class MovieHolder extends RecyclerView.ViewHolder {
-    private final ImageButton mImageButton;
+  //https://piercezaifman.com/click-listener-for-recyclerview-adapter/
 
-    public MovieHolder(View itemView) {
+  public interface RecyclerViewClickListener {
+    void onClick(View view, int i);
+  }
+
+  private class MovieHolder extends RecyclerView.ViewHolder  implements View.OnClickListener {
+    private final ImageButton mImageButton;
+    private RecyclerViewClickListener mRecyclerViewClickListener;
+
+
+    public MovieHolder(View itemView, RecyclerViewClickListener listener) {
       super(itemView);
 
       mImageButton = itemView.findViewById(R.id.list_item_movie_button);
-
+      mRecyclerViewClickListener = listener;
+      mImageButton.setOnClickListener(this);
     }
 
     public void bindDrawable(Drawable drawable, final MovieData movie) {
@@ -184,17 +191,12 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
           .placeholder(drawable)
           .into(mImageButton);
 
-      //Create an Intent.
-      mImageButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          Intent i = new Intent(getApplicationContext(), DetailActivity.class);
-          i.putExtra(MOVIE_DATA, movie);
-          startActivity(i);
-        }
-      });
     }
 
+    @Override
+    public void onClick(View v) {
+      mRecyclerViewClickListener.onClick(v, getAdapterPosition());
+    }
   }
 
   private class MovieAdapter extends RecyclerView.Adapter<MovieHolder> {
@@ -209,7 +211,17 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
     public MovieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
       LayoutInflater inflater = LayoutInflater.from(parent.getContext());
       View view = inflater.inflate(R.layout.list_item_movie, parent, false);
-      return new MovieHolder(view);
+
+      RecyclerViewClickListener listener = new RecyclerViewClickListener() {
+        @Override
+        public void onClick(View view, int i) {
+          Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+          intent.putExtra(MOVIE_DATA, mMovies.get(i));
+          startActivity(intent);
+        }
+      };
+
+      return new MovieHolder(view, listener);
     }
 
     @Override
@@ -233,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
      MovieAPIResults.DataAcquiredListener interface and implemented
      that interface here to listen for the asynchronous task to return.
    */
-
 
   @Override
   public void onMovieDataAcquired(List<MovieData> movies) {

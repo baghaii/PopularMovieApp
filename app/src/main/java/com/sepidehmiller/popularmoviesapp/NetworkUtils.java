@@ -5,7 +5,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkUtils {
-  private static final String API_KEY = "insert API KEY here";
+  private static final String API_KEY = "insert api key here";
   private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
 
   public static final String POPULAR = "popular";

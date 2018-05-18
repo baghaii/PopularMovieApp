@@ -48,6 +48,7 @@ public class DetailActivity extends AppCompatActivity {
       Picasso.get()
           .load(movie.getSmallPosterUrl())
           .fit()
+          .centerCrop()
           .into(mImageView);
       Log.i(TAG, String.valueOf((float) movie.getVoteAverage()));
     }

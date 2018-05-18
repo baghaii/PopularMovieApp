@@ -1,106 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<ScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:context=".DetailActivity">
+  android:layout_height="match_parent">
 
-  <RatingBar
-    android:id="@+id/ratingBar"
-    android:numStars="5"
-    android:layout_width="wrap_content"
+  <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/imageView"/>
+    android:orientation="vertical">
 
-  <TextView
-    android:id="@+id/titleTextView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="8dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
-    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-    android:textAlignment="center"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:text="Title of Movie"/>
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="horizontal"
+      tools:context=".DetailActivity">
 
-  <ImageView
-    android:id="@+id/imageView"
-    android:layout_width="150dp"
-    android:layout_height="200dp"
-    android:layout_marginLeft="24dp"
-    android:layout_marginStart="24dp"
-    android:layout_marginTop="16dp"
-    android:contentDescription="@string/movie_poster"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/titleTextView"
-    app:srcCompat="@drawable/cinema"/>
+      <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/movie_poster"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/cinema"/>
 
-  <TextView
-    android:id="@+id/releaseDataTextView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="8dp"
-    android:layout_marginStart="8dp"
-    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-    android:textSize="18sp"
-    app:layout_constraintBottom_toBottomOf="@+id/releaseLabelTextView"
-    app:layout_constraintStart_toEndOf="@+id/releaseLabelTextView"
-    app:layout_constraintTop_toTopOf="@+id/releaseLabelTextView"
-    tools:text="2/10/2010"/>
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:orientation="vertical">
 
-  <TextView
-    android:id="@+id/releaseLabelTextView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="8dp"
-    android:text="@string/release_date"
-    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-    android:textColor="@android:color/black"
-    android:textSize="18sp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/ratingBar"/>
+        <TextView
+          android:id="@+id/titleTextView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="8dp"
+          android:layout_marginLeft="8dp"
+          android:layout_marginRight="8dp"
+          android:layout_marginStart="8dp"
+          android:layout_marginTop="16dp"
+          android:textAlignment="center"
+          android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+          android:textSize="24sp"
+          tools:text="Title of Movie"/>
 
-  <TextView
-    android:id="@+id/synopsisLabelTextView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:text="@string/synopsis_label"
-    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-    android:textColor="@android:color/black"
-    android:textSize="18sp"
-    app:layout_constraintStart_toStartOf="@+id/releaseLabelTextView"
-    app:layout_constraintTop_toBottomOf="@+id/releaseLabelTextView"/>
+        <RatingBar
+          android:id="@+id/ratingBar"
+          style="?android:attr/ratingBarStyleSmall"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginTop="8dp"
+          android:numStars="5"/>
 
-  <!-- https://stackoverflow.com/questions/1748977/making-textview-scrollable-on-android#3256305 -->
+        <TextView
+          android:id="@+id/releaseLabelTextView"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="8dp"
+          android:text="@string/release_date"
+          android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+          android:textColor="@android:color/black"
+          android:textSize="18sp"/>
+
+        <TextView
+          android:id="@+id/releaseDataTextView"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginStart="16dp"
+          android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+          android:textSize="18sp"
+          tools:text="2/10/2010"/>
+
+      </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+      android:id="@+id/synopsisLabelTextView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="8dp"
+      android:text="@string/synopsis_label"
+      android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+      android:textColor="@android:color/black"
+      android:textSize="18sp"/>
+
+    <!-- https://stackoverflow.com/questions/1748977/making-textview-scrollable-on-android#3256305 -->
     <TextView
       android:id="@+id/synopsisTextView"
-      android:layout_width="0dp"
-      android:layout_height="0dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
       android:layout_marginBottom="8dp"
       android:layout_marginEnd="24dp"
+      android:layout_marginLeft="24dp"
       android:layout_marginRight="24dp"
+      android:layout_marginStart="24dp"
       android:layout_marginTop="8dp"
       android:textSize="18sp"
-      android:maxLines="7"
-      android:scrollbars="vertical"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="@+id/synopsisLabelTextView"
-      app:layout_constraintTop_toBottomOf="@+id/synopsisLabelTextView"/>
+      />
 
-
-</android.support.constraint.ConstraintLayout>
+  </LinearLayout>
+</ScrollView>
