@@ -21,7 +21,7 @@
         android:id="@+id/imageView"
         android:layout_width="150dp"
         android:layout_height="200dp"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/margin"
         android:contentDescription="@string/movie_poster"
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/cinema"/>
@@ -36,14 +36,8 @@
           android:id="@+id/titleTextView"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="8dp"
-          android:layout_marginLeft="8dp"
-          android:layout_marginRight="8dp"
-          android:layout_marginStart="8dp"
-          android:layout_marginTop="16dp"
-          android:textAlignment="center"
-          android:textAppearance="@style/TextAppearance.AppCompat.Display1"
           android:textSize="24sp"
+          style="@style/Title"
           tools:text="Title of Movie"/>
 
         <RatingBar
@@ -52,7 +46,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center_horizontal"
-          android:layout_marginTop="8dp"
+          android:layout_marginTop="@dimen/margin"
           android:numStars="5"/>
 
         <TextView
@@ -63,9 +57,7 @@
           android:layout_marginStart="16dp"
           android:layout_marginTop="8dp"
           android:text="@string/release_date"
-          android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-          android:textColor="@android:color/black"
-          android:textSize="18sp"/>
+          style="@style/CustomLabel"/>
 
         <TextView
           android:id="@+id/releaseDataTextView"
@@ -84,25 +76,23 @@
       android:id="@+id/synopsisLabelTextView"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="8dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginTop="8dp"
+      android:layout_marginLeft="@dimen/margin"
+      android:layout_marginStart="@dimen/margin"
+      android:layout_marginTop="@dimen/margin"
       android:text="@string/synopsis_label"
-      android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-      android:textColor="@android:color/black"
-      android:textSize="18sp"/>
+      style="@style/CustomLabel"/>
 
     <!-- https://stackoverflow.com/questions/1748977/making-textview-scrollable-on-android#3256305 -->
     <TextView
       android:id="@+id/synopsisTextView"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="8dp"
+      android:layout_marginBottom="@dimen/margin"
       android:layout_marginEnd="24dp"
       android:layout_marginLeft="24dp"
       android:layout_marginRight="24dp"
       android:layout_marginStart="24dp"
-      android:layout_marginTop="8dp"
+      android:layout_marginTop="@dimen/margin"
       android:textSize="18sp"
       />
 

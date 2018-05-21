@@ -49,6 +49,8 @@ public class DetailActivity extends AppCompatActivity {
           .load(movie.getSmallPosterUrl())
           .fit()
           .centerCrop()
+          .placeholder(R.drawable.cinema)
+          .error(R.drawable.cinema)
           .into(mImageView);
       Log.i(TAG, String.valueOf((float) movie.getVoteAverage()));
     }

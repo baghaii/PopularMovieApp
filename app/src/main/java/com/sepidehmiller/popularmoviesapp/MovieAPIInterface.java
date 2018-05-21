@@ -9,18 +9,20 @@ public interface MovieAPIInterface {
 
   @GET("{sortOrder}")
   Call<MovieAPIResults> getMovieData(
-    @Path("sortOrder") String sortOrder,
-    @Query("api_key") String apiKey
+      @Path("sortOrder") String sortOrder,
+      @Query("api_key") String apiKey
   );
 
 
   @GET("{id}/videos")
   Call<VideoResults> getVideoData(
-    @Query("api_key") String apiKey
+      @Path("id") int id,
+      @Query("api_key") String apiKey
   );
 
   @GET("{id}/reviews")
   Call<ReviewResults> getReviewData(
+      @Path("id") int id,
       @Query("api_key") String apiKey
   );
 

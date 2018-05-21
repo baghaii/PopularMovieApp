@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
           .fit()
           .centerCrop()
           .placeholder(drawable)
+          .error(drawable)
           .into(mImageButton);
 
     }
