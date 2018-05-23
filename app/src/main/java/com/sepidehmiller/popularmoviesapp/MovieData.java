@@ -24,12 +24,18 @@ public class MovieData implements Parcelable {
   @SerializedName("overview")
   private final String mOverview;
 
-  public MovieData(String title, String releaseDate, double voteAverage, String posterPath, String overview) {
+  @SerializedName("id")
+  private final int mId;
+
+  private boolean mFavorite = false;
+
+  public MovieData(String title, String releaseDate, double voteAverage, String posterPath, String overview, int id) {
     mTitle = title;
     mReleaseDate = releaseDate;
     mVoteAverage = voteAverage;
     mPosterPath = posterPath;
     mOverview = overview;
+    mId = id;
   }
 
   //http://www.vogella.com/tutorials/AndroidParcelable/article.html
@@ -39,6 +45,7 @@ public class MovieData implements Parcelable {
     mVoteAverage = in.readDouble();
     mPosterPath = in.readString();
     mOverview = in.readString();
+    mId = in.readInt();
 
   }
 
@@ -66,6 +73,8 @@ public class MovieData implements Parcelable {
     return BASE_PATH + getPosterPath();
   }
 
+  public int getId() { return mId; }
+
   /* writeToParcel and describeContents are used to write parcels. */
   @Override
   public void writeToParcel(Parcel dest, int flags) {
@@ -74,6 +83,7 @@ public class MovieData implements Parcelable {
       dest.writeDouble(mVoteAverage);
       dest.writeString(mPosterPath);
       dest.writeString(mOverview);
+      dest.writeInt(mId);
   }
 
   @Override
@@ -90,4 +100,12 @@ public class MovieData implements Parcelable {
       return new MovieData[size];
     }
   };
+
+  public boolean isFavorite() {
+    return mFavorite;
+  }
+
+  public void setFavorite(boolean favorite) {
+    mFavorite = favorite;
+  }
 }
