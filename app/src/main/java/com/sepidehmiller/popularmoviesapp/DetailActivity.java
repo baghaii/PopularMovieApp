@@ -1,7 +1,9 @@
 package com.sepidehmiller.popularmoviesapp;
 
+import android.content.ContentValues;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +15,9 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.stetho.Stetho;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
@@ -41,6 +45,7 @@ public class DetailActivity extends AppCompatActivity {
     mRatingBar.setNumStars(5);
     mRatingBar.setStepSize((float)0.1);
     mImageView = findViewById(R.id.imageView);
+    Stetho.initializeWithDefaults(this);
 
 
 
@@ -74,10 +79,26 @@ public class DetailActivity extends AppCompatActivity {
     switch(item.getItemId()) {
       case R.id.menu_item_favorite:
         changeIconColor(item);
+        addMovieToDb();
         return true;
       default:
         return false;
     }
+  }
+
+  public void addMovieToDb() {
+    ContentValues cv = new ContentValues();
+    cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovie.getId());
+
+    //Sqlite doesn't have boolean values. Using one for true, zero for false
+    cv.put(MovieContract.MovieEntry.COLUMN_FAVORITE, 1);
+
+    Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, cv);
+
+    if (uri != null) {
+      Toast.makeText(this, uri.toString(),Toast.LENGTH_LONG).show();
+    }
+
   }
 
   public void changeIconColor(MenuItem item) {

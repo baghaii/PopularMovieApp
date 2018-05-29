@@ -33,9 +33,11 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
   private static final String TAG = "MainActivity";
   private static final String MOVIE_DATA = "MovieData";
   private static final String SORT_ORDER = "SortOrder";
+  private static final String FAVORITE = "favorite";
+
   private SharedPreferences mSharedPreferences;
 
-  private String mSortOrder="popular";
+  private String mSortOrder = NetworkUtils.POPULAR;
 
   private MovieAdapter mMovieAdapter;
   private RecyclerView mRecyclerView;
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
 
     MenuItem popular = menu.getItem(0);
     MenuItem top_rated = menu.getItem(1);
+    MenuItem favorite = menu.getItem(2  );
 
     if (mSharedPreferences.contains(SORT_ORDER)) {
       String sort = mSharedPreferences.getString(SORT_ORDER, NetworkUtils.POPULAR);
@@ -110,9 +113,12 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
       if (sort.contentEquals(NetworkUtils.TOP_RATED)) {
         mSortOrder = NetworkUtils.TOP_RATED;
         top_rated.setChecked(true);
-      } else {
+      } else if (sort.contentEquals(NetworkUtils.POPULAR)) {
         mSortOrder = NetworkUtils.POPULAR;
         popular.setChecked(true);
+      } else {
+        mSortOrder = FAVORITE;
+        favorite.setChecked(true);
       }
 
       Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
@@ -141,6 +147,11 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
         editor.apply();
         call = NetworkUtils.buildAPICall(mSortOrder);
         callAPI(call);
+        return true;
+      case R.id.menu_item_favorite:
+        toggleMenuOption(item);
+        editor.putString(SORT_ORDER, "favorite");
+        editor.apply();
         return true;
       default:
         return false;
