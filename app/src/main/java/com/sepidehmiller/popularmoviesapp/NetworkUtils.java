@@ -1,5 +1,7 @@
 package com.sepidehmiller.popularmoviesapp;
 
+import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoResults;
+
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -22,6 +24,18 @@ public class NetworkUtils {
 
     MovieAPIInterface movieAPIInterface = retrofit.create(MovieAPIInterface.class);
     Call<MovieAPIResults> call = movieAPIInterface.getMovieData(sortOrder, API_KEY);
+
+    return call;
+  }
+
+  public static Call<VideoResults> buildVideoCall(int videoId) {
+    Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build();
+
+    MovieAPIInterface movieInterface = retrofit.create(MovieAPIInterface.class);
+    Call<VideoResults> call = movieInterface.getVideoData(videoId, API_KEY);
 
     return call;
   }

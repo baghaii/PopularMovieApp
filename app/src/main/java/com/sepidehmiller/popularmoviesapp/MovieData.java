@@ -27,7 +27,10 @@ public class MovieData implements Parcelable {
   @SerializedName("id")
   private final int mId;
 
-  private boolean mFavorite = false;
+  //Parcelable doesn't let you write a single boolean.
+  //Using 0 to specify something that is not a favorite.
+  //Using 1 to specify a favorite.
+  private int mFavorite = 0;
 
   public MovieData(String title, String releaseDate, double voteAverage, String posterPath, String overview, int id) {
     mTitle = title;
@@ -46,6 +49,7 @@ public class MovieData implements Parcelable {
     mPosterPath = in.readString();
     mOverview = in.readString();
     mId = in.readInt();
+    mFavorite = in.readInt();
 
   }
 
@@ -84,6 +88,7 @@ public class MovieData implements Parcelable {
       dest.writeString(mPosterPath);
       dest.writeString(mOverview);
       dest.writeInt(mId);
+      dest.writeInt(mFavorite);
   }
 
   @Override
@@ -101,11 +106,11 @@ public class MovieData implements Parcelable {
     }
   };
 
-  public boolean isFavorite() {
+  public int isFavorite() {
     return mFavorite;
   }
 
-  public void setFavorite(boolean favorite) {
+  public void setFavorite(int favorite) {
     mFavorite = favorite;
   }
 }

@@ -1,5 +1,7 @@
 package com.sepidehmiller.popularmoviesapp;
 
+import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoResults;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

@@ -18,9 +18,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
+import com.sepidehmiller.popularmoviesapp.VideoUtils.Video;
+import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoResults;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class DetailActivity extends AppCompatActivity implements VideoResults.VideoAcquiredListener {
 
   private static final String TAG = "DetailActivity";
   private static final String MOVIE_DATA = "MovieData";
@@ -43,10 +51,9 @@ public class DetailActivity extends AppCompatActivity {
     mRatingBar = findViewById(R.id.ratingBar);
     mRatingBar.setIsIndicator(true);
     mRatingBar.setNumStars(5);
-    mRatingBar.setStepSize((float)0.1);
+    mRatingBar.setStepSize((float) 0.1);
     mImageView = findViewById(R.id.imageView);
     Stetho.initializeWithDefaults(this);
-
 
 
     Bundle data = getIntent().getExtras();
@@ -55,7 +62,7 @@ public class DetailActivity extends AppCompatActivity {
       mTitleTextView.setText(mMovie.getTitle());
       mReleaseDateTextView.setText(mMovie.getReleaseDate());
       mSynopsisTextView.setText(mMovie.getOverview());
-      mRatingBar.setRating((float) mMovie.getVoteAverage()/ (float) 2.0);
+      mRatingBar.setRating((float) mMovie.getVoteAverage() / (float) 2.0);
 
       Picasso.get()
           .load(mMovie.getSmallPosterUrl())
@@ -65,6 +72,10 @@ public class DetailActivity extends AppCompatActivity {
           .error(R.drawable.cinema)
           .into(mImageView);
       Log.i(TAG, String.valueOf((float) mMovie.getVoteAverage()));
+
+      Call<VideoResults> call = NetworkUtils.buildVideoCall(mMovie.getId());
+
+      callVideos(call);
     }
 
   }
@@ -76,7 +87,7 @@ public class DetailActivity extends AppCompatActivity {
   }
 
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch(item.getItemId()) {
+    switch (item.getItemId()) {
       case R.id.menu_item_favorite:
         changeIconColor(item);
         addMovieToDb();
@@ -96,7 +107,7 @@ public class DetailActivity extends AppCompatActivity {
     Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, cv);
 
     if (uri != null) {
-      Toast.makeText(this, uri.toString(),Toast.LENGTH_LONG).show();
+      Toast.makeText(this, uri.toString(), Toast.LENGTH_LONG).show();
     }
 
   }
@@ -108,17 +119,44 @@ public class DetailActivity extends AppCompatActivity {
       How do we change icon colors?
       https://stackoverflow.com/questions/32924986/change-fill-color-on-vector-asset-in-android-studio
      */
-    if (!mMovie.isFavorite()) {
+    if (mMovie.isFavorite() == 0) {
       DrawableCompat.setTint(newIcon, getResources().getColor(R.color.colorAccent));
       item.setIcon(newIcon);
-      mMovie.setFavorite(true);
+      mMovie.setFavorite(1);
     } else {
       DrawableCompat.setTint(newIcon, getResources().getColor(R.color.white));
-      mMovie.setFavorite(false);
+      mMovie.setFavorite(0);
     }
 
     DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
     item.setIcon(newIcon);
   }
 
+
+  //Get videos from the video API asynchronously.
+
+  public void callVideos(Call<VideoResults> call) {
+    call.enqueue(new Callback<VideoResults>() {
+      @Override
+      public void onResponse(Call<VideoResults> call, Response<VideoResults> response) {
+        if (response.message().contentEquals("OK")) {
+          onVideosAcquired(response.body().getVideoList());
+        } else {
+          Log.e(TAG, response.message());
+        }
+      }
+
+      @Override
+      public void onFailure(Call<VideoResults> call, Throwable t) {
+        Log.e(TAG, t.getMessage());
+      }
+    });
+  }
+
+  @Override
+  public void onVideosAcquired(List<Video> videos) {
+    for (Video v : videos) {
+      Log.i(TAG, v.getName());
+    }
+  }
 }
