@@ -5,7 +5,7 @@ This is a project being created for the Android Nanodegree program. The specs fo
 This app uses the [themoviedb.org](https://www.themoviedb.org/settings/api) API to populate movies into a view. Those movies can be sorted by popularity or rating.
 
 ## Quick Start
-Get your own API key at [themoviedb.org], and change NetworkUtils.java to use your API key.
+Get your own API key at [themoviedb.org](https://www.themoviedb.org), and change NetworkUtils.java to use your API key.
 
 Then you should be able to build this project in Android Studio.
 
