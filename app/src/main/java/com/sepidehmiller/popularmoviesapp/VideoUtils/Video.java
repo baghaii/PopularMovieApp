@@ -24,4 +24,6 @@ public class Video {
     return name;
   }
 
+  public String getKey() { return key; }
+
 }

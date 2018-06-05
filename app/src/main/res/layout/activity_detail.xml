@@ -96,5 +96,21 @@
       android:textSize="18sp"
       />
 
+    <TextView
+      android:id="@+id/video_label_textview"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/videos"
+      android:visibility="gone"
+      android:layout_marginLeft="@dimen/margin"
+      android:layout_marginStart="@dimen/margin"
+      style="@style/CustomLabel"/>
+
+    <android.support.v7.widget.RecyclerView
+      android:id="@+id/video_recycler_view"
+      android:layout_width="match_parent"
+      android:layout_height="80dp"
+      />
+
   </LinearLayout>
 </ScrollView>

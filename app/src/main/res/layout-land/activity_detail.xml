@@ -11,6 +11,7 @@
   https://stackoverflow.com/questions/6153587/how-can-i-decrease-the-size-of-ratingbar -->
   <RatingBar
     android:id="@+id/ratingBar"
+    style="?android:attr/ratingBarStyleSmall"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="@dimen/margin"
@@ -19,17 +20,16 @@
     android:layout_marginStart="@dimen/margin"
     android:layout_marginTop="@dimen/margin"
     android:numStars="5"
-    style="?android:attr/ratingBarStyleSmall"
     app:layout_constraintEnd_toEndOf="@+id/titleTextView"
     app:layout_constraintStart_toStartOf="@+id/titleTextView"
     app:layout_constraintTop_toBottomOf="@+id/titleTextView"/>
 
   <TextView
     android:id="@+id/titleTextView"
+    style="@style/Title"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textSize="30sp"
-    style="@style/Title"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
@@ -40,8 +40,8 @@
     android:layout_width="167dp"
     android:layout_height="0dp"
     android:layout_marginBottom="@dimen/margin"
-    android:layout_marginStart="16dp"
     android:layout_marginLeft="16dp"
+    android:layout_marginStart="16dp"
     android:layout_marginTop="@dimen/margin"
     android:scaleType="centerCrop"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -64,13 +64,13 @@
 
   <TextView
     android:id="@+id/releaseLabelTextView"
+    style="@style/CustomLabel"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginLeft="16dp"
     android:layout_marginStart="16dp"
     android:layout_marginTop="16dp"
     android:text="@string/release_date"
-    style="@style/CustomLabel"
     app:layout_constraintStart_toEndOf="@+id/imageView"
     app:layout_constraintTop_toBottomOf="@+id/ratingBar"/>
 
@@ -91,15 +91,34 @@
 
   <TextView
     android:id="@+id/synopsisLabelTextView"
+    style="@style/CustomLabel"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
     android:layout_marginTop="4dp"
     android:text="@string/synopsis_label"
-    style="@style/CustomLabel"
     app:layout_constraintBottom_toTopOf="@+id/synopsisTextView"
     app:layout_constraintStart_toStartOf="@+id/releaseLabelTextView"
     app:layout_constraintTop_toBottomOf="@+id/releaseLabelTextView"/>
+
+  <TextView
+    android:id="@+id/video_label_textview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:text="@string/videos"
+    android:visibility="visible"
+    app:layout_constraintStart_toStartOf="@+id/synopsisLabelTextView"
+    app:layout_constraintTop_toBottomOf="@+id/synopsisTextView"/>
+
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/video_recycler_view"
+    android:layout_width="0dp"
+    android:layout_height="80dp"
+    android:layout_marginTop="8dp"
+    app:layout_constraintEnd_toEndOf="@+id/synopsisTextView"
+    app:layout_constraintStart_toStartOf="@+id/video_label_textview"
+    app:layout_constraintTop_toBottomOf="@+id/video_label_textview"/>
 
 </android.support.constraint.ConstraintLayout>
 

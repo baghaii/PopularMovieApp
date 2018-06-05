@@ -10,7 +10,9 @@
   <string name="release_date">Release Date:</string>
   <string name="synopsis_label">Synopsis:</string>
   <string name="movie_poster">Movie Poster</string>
+  <string name="videos">Videos:</string>
 
   <!-- menu_detail.xml -->
   <string name="favorite">Favorite</string>
+
 </resources>

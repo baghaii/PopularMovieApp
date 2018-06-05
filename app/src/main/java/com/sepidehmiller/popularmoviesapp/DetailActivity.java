@@ -7,11 +7,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.Video;
+import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoAdapter;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoResults;
 import com.squareup.picasso.Picasso;
 
@@ -39,6 +44,10 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
   private RatingBar mRatingBar;
   private ImageView mImageView;
   private MovieData mMovie;
+  private List<Video> mVideos;
+
+  private TextView mVideoTextView;
+  private RecyclerView mVideoRecyclerView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +55,22 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
     setContentView(R.layout.activity_detail);
     mTitleTextView = findViewById(R.id.titleTextView);
     mReleaseDateTextView = findViewById(R.id.releaseDataTextView);
+
     mSynopsisTextView = findViewById(R.id.synopsisTextView);
     mSynopsisTextView.setMovementMethod(new ScrollingMovementMethod());
+
     mRatingBar = findViewById(R.id.ratingBar);
     mRatingBar.setIsIndicator(true);
     mRatingBar.setNumStars(5);
     mRatingBar.setStepSize((float) 0.1);
+
     mImageView = findViewById(R.id.imageView);
+    mVideoTextView = findViewById(R.id.video_label_textview);
+    mVideoRecyclerView = findViewById(R.id.video_recycler_view);
     Stetho.initializeWithDefaults(this);
 
-
     Bundle data = getIntent().getExtras();
+
     if (data != null && !data.isEmpty()) {
       mMovie = data.getParcelable(MOVIE_DATA);
       mTitleTextView.setText(mMovie.getTitle());
@@ -76,8 +90,15 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
       Call<VideoResults> call = NetworkUtils.buildVideoCall(mMovie.getId());
 
       callVideos(call);
-    }
+      LinearLayoutManager videoLayoutManager = new LinearLayoutManager(
+          this, LinearLayoutManager.VERTICAL, false);
 
+      mVideoRecyclerView.setLayoutManager(videoLayoutManager);
+      RecyclerView.ItemDecoration itemDecoration = new
+          DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+      mVideoRecyclerView.addItemDecoration(itemDecoration);
+
+    }
   }
 
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,6 +106,7 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
     inflater.inflate(R.menu.menu_detail, menu);
     return true;
   }
+
 
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
@@ -140,6 +162,7 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
       @Override
       public void onResponse(Call<VideoResults> call, Response<VideoResults> response) {
         if (response.message().contentEquals("OK")) {
+          Log.i(TAG, response.body().getVideoList().toString());
           onVideosAcquired(response.body().getVideoList());
         } else {
           Log.e(TAG, response.message());
@@ -153,10 +176,16 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
     });
   }
 
+
+  /* Show the videos if you have them. */
+
   @Override
   public void onVideosAcquired(List<Video> videos) {
-    for (Video v : videos) {
-      Log.i(TAG, v.getName());
-    }
+    mVideos = videos;
+    mVideoTextView.setVisibility(View.VISIBLE);
+    mVideoRecyclerView.setAdapter(new VideoAdapter(mVideos));
   }
+
 }
+
+
