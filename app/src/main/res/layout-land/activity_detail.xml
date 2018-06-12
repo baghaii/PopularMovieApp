@@ -40,85 +40,114 @@
     android:layout_width="167dp"
     android:layout_height="0dp"
     android:layout_marginBottom="@dimen/margin"
-    android:layout_marginLeft="16dp"
     android:layout_marginStart="16dp"
     android:layout_marginTop="@dimen/margin"
+    android:contentDescription="@string/movie_poster"
     android:scaleType="centerCrop"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/titleTextView"
     app:srcCompat="@drawable/cinema"/>
 
-  <TextView
-    android:id="@+id/releaseDataTextView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/margin"
-    android:layout_marginStart="@dimen/margin"
-    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-    android:textSize="16sp"
-    app:layout_constraintBottom_toBottomOf="@+id/releaseLabelTextView"
-    app:layout_constraintStart_toEndOf="@+id/releaseLabelTextView"
-    app:layout_constraintTop_toTopOf="@+id/releaseLabelTextView"
-    tools:text="2/10/2010"/>
-
-  <TextView
-    android:id="@+id/releaseLabelTextView"
-    style="@style/CustomLabel"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="16dp"
-    android:text="@string/release_date"
-    app:layout_constraintStart_toEndOf="@+id/imageView"
-    app:layout_constraintTop_toBottomOf="@+id/ratingBar"/>
-
-  <!-- https://stackoverflow.com/questions/1748977/making-textview-scrollable-on-android#3256305 -->
-  <TextView
-    android:id="@+id/synopsisTextView"
+  <ScrollView
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="16dp"
-    android:layout_marginRight="16dp"
-    android:layout_marginTop="4dp"
-    android:maxLines="10"
-    android:scrollbars="vertical"
-    android:textSize="16sp"
+    android:layout_marginStart="@dimen/double_margin"
+    android:layout_marginTop="@dimen/margin"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="@+id/synopsisLabelTextView"
-    app:layout_constraintTop_toBottomOf="@+id/synopsisLabelTextView"/>
+    app:layout_constraintStart_toEndOf="@+id/imageView"
+    app:layout_constraintTop_toBottomOf="@+id/ratingBar">
 
-  <TextView
-    android:id="@+id/synopsisLabelTextView"
-    style="@style/CustomLabel"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:layout_marginTop="4dp"
-    android:text="@string/synopsis_label"
-    app:layout_constraintBottom_toTopOf="@+id/synopsisTextView"
-    app:layout_constraintStart_toStartOf="@+id/releaseLabelTextView"
-    app:layout_constraintTop_toBottomOf="@+id/releaseLabelTextView"/>
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
 
-  <TextView
-    android:id="@+id/video_label_textview"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:text="@string/videos"
-    android:visibility="visible"
-    app:layout_constraintStart_toStartOf="@+id/synopsisLabelTextView"
-    app:layout_constraintTop_toBottomOf="@+id/synopsisTextView"/>
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-  <android.support.v7.widget.RecyclerView
-    android:id="@+id/video_recycler_view"
-    android:layout_width="0dp"
-    android:layout_height="80dp"
-    android:layout_marginTop="8dp"
-    app:layout_constraintEnd_toEndOf="@+id/synopsisTextView"
-    app:layout_constraintStart_toStartOf="@+id/video_label_textview"
-    app:layout_constraintTop_toBottomOf="@+id/video_label_textview"/>
+        <TextView
+          android:id="@+id/releaseLabelTextView"
+          style="@style/CustomLabel"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/release_date"
+          />
+
+        <TextView
+          android:id="@+id/releaseDataTextView"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="@dimen/margin"
+          android:layout_marginStart="@dimen/margin"
+          android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+          android:textSize="16sp"
+          tools:text="2/10/2010"/>
+
+      </LinearLayout>
+
+
+      <TextView
+        android:id="@+id/synopsisLabelTextView"
+        style="@style/CustomLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:text="@string/synopsis_label"
+        />
+
+      <!-- https://stackoverflow.com/questions/1748977/making-textview-scrollable-on-android#3256305 -->
+      <TextView
+        android:id="@+id/synopsisTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="4dp"
+        android:maxLines="10"
+        android:scrollbars="vertical"
+        android:textSize="16sp"
+        />
+
+
+      <TextView
+        android:id="@+id/video_label_textview"
+        style="@style/CustomLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/videos"
+        android:visibility="visible"
+        />
+
+      <android.support.v7.widget.RecyclerView
+        android:id="@+id/video_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        />
+
+      <TextView
+        android:id="@+id/review_label_textview"
+        style="@style/CustomLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/reviews"
+        android:visibility="visible"
+        />
+
+      <android.support.v7.widget.RecyclerView
+        android:id="@+id/review_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        />
+    </LinearLayout>
+  </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
 

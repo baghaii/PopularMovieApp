@@ -1,5 +1,6 @@
 package com.sepidehmiller.popularmoviesapp;
 
+import com.sepidehmiller.popularmoviesapp.ReviewUtils.ReviewResults;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoResults;
 
 import retrofit2.Call;

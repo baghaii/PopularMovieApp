@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
+import com.sepidehmiller.popularmoviesapp.ReviewUtils.ReviewResults;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.Video;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoAdapter;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoResults;
@@ -48,6 +49,7 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
 
   private TextView mVideoTextView;
   private RecyclerView mVideoRecyclerView;
+  private RecyclerView mReviewRecyclerView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +69,13 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
     mImageView = findViewById(R.id.imageView);
     mVideoTextView = findViewById(R.id.video_label_textview);
     mVideoRecyclerView = findViewById(R.id.video_recycler_view);
+    mReviewRecyclerView = findViewById(R.id.review_recycler_view);
+
     Stetho.initializeWithDefaults(this);
 
     Bundle data = getIntent().getExtras();
 
-    if (data != null && !data.isEmpty()) {
+    if (data != null && data.containsKey(MOVIE_DATA)) {
       mMovie = data.getParcelable(MOVIE_DATA);
       mTitleTextView.setText(mMovie.getTitle());
       mReleaseDateTextView.setText(mMovie.getReleaseDate());
@@ -87,7 +91,7 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
           .into(mImageView);
       Log.i(TAG, String.valueOf((float) mMovie.getVoteAverage()));
 
-      Call<VideoResults> call = NetworkUtils.buildVideoCall(mMovie.getId());
+     /* Call<VideoResults> call = NetworkUtils.buildVideoCall(mMovie.getId());
 
       callVideos(call);
       LinearLayoutManager videoLayoutManager = new LinearLayoutManager(
@@ -96,9 +100,26 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
       mVideoRecyclerView.setLayoutManager(videoLayoutManager);
       RecyclerView.ItemDecoration itemDecoration = new
           DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-      mVideoRecyclerView.addItemDecoration(itemDecoration);
+      mVideoRecyclerView.addItemDecoration(itemDecoration); */
 
+      setupVideoRecycler(mMovie.getId());
+
+      Call<ReviewResults> reviewCall = NetworkUtils.buildReviewCall(mMovie.getId());
+      callReviews(reviewCall);
     }
+  }
+
+  public void setupVideoRecycler(int id) {
+    Call<VideoResults> call = NetworkUtils.buildVideoCall(id);
+
+    callVideos(call);
+    LinearLayoutManager videoLayoutManager = new LinearLayoutManager(
+        this, LinearLayoutManager.VERTICAL, false);
+
+    mVideoRecyclerView.setLayoutManager(videoLayoutManager);
+    RecyclerView.ItemDecoration itemDecoration = new
+        DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+    mVideoRecyclerView.addItemDecoration(itemDecoration);
   }
 
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -171,6 +192,22 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
 
       @Override
       public void onFailure(Call<VideoResults> call, Throwable t) {
+        Log.e(TAG, t.getMessage());
+      }
+    });
+  }
+
+  public void callReviews(Call<ReviewResults> call) {
+    call.enqueue(new Callback<ReviewResults>() {
+      @Override
+      public void onResponse(Call<ReviewResults> call, Response<ReviewResults> response) {
+        if (response.message().contentEquals("OK")) {
+          Log.i(TAG, response.body().toString());
+        } else Log.e(TAG, response.message());
+      }
+
+      @Override
+      public void onFailure(Call<ReviewResults> call, Throwable t) {
         Log.e(TAG, t.getMessage());
       }
     });

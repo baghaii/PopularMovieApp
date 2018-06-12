@@ -112,5 +112,22 @@
       android:layout_height="80dp"
       />
 
+    <TextView
+      android:id="@+id/review_label_textview"
+      style="@style/CustomLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/margin"
+      android:layout_marginStart="@dimen/margin"
+      android:text="@string/reviews"
+      android:visibility="visible"
+      />
+
+    <android.support.v7.widget.RecyclerView
+      android:id="@+id/review_recycler_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      />
+
   </LinearLayout>
 </ScrollView>
