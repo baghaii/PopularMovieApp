@@ -120,13 +120,15 @@
       android:layout_marginTop="@dimen/margin"
       android:layout_marginStart="@dimen/margin"
       android:text="@string/reviews"
-      android:visibility="visible"
+      android:visibility="gone"
       />
 
     <android.support.v7.widget.RecyclerView
       android:id="@+id/review_recycler_view"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:paddingLeft="@dimen/double_margin"
+      android:paddingRight="@dimen/double_margin"
       />
 
   </LinearLayout>

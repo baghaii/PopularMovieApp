@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
+import com.sepidehmiller.popularmoviesapp.ReviewUtils.Review;
+import com.sepidehmiller.popularmoviesapp.ReviewUtils.ReviewAdapter;
 import com.sepidehmiller.popularmoviesapp.ReviewUtils.ReviewResults;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.Video;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoAdapter;
@@ -34,7 +36,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailActivity extends AppCompatActivity implements VideoResults.VideoAcquiredListener {
+public class DetailActivity extends AppCompatActivity implements
+    VideoResults.VideoAcquiredListener,
+    ReviewResults.ReviewsAcquiredListener {
 
   private static final String TAG = "DetailActivity";
   private static final String MOVIE_DATA = "MovieData";
@@ -45,9 +49,9 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
   private RatingBar mRatingBar;
   private ImageView mImageView;
   private MovieData mMovie;
-  private List<Video> mVideos;
 
   private TextView mVideoTextView;
+  private TextView mReviewTextView;
   private RecyclerView mVideoRecyclerView;
   private RecyclerView mReviewRecyclerView;
 
@@ -68,6 +72,7 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
 
     mImageView = findViewById(R.id.imageView);
     mVideoTextView = findViewById(R.id.video_label_textview);
+    mReviewTextView = findViewById(R.id.review_label_textview);
     mVideoRecyclerView = findViewById(R.id.video_recycler_view);
     mReviewRecyclerView = findViewById(R.id.review_recycler_view);
 
@@ -91,21 +96,9 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
           .into(mImageView);
       Log.i(TAG, String.valueOf((float) mMovie.getVoteAverage()));
 
-     /* Call<VideoResults> call = NetworkUtils.buildVideoCall(mMovie.getId());
-
-      callVideos(call);
-      LinearLayoutManager videoLayoutManager = new LinearLayoutManager(
-          this, LinearLayoutManager.VERTICAL, false);
-
-      mVideoRecyclerView.setLayoutManager(videoLayoutManager);
-      RecyclerView.ItemDecoration itemDecoration = new
-          DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-      mVideoRecyclerView.addItemDecoration(itemDecoration); */
-
       setupVideoRecycler(mMovie.getId());
+      setupReviewRecycler(mMovie.getId());
 
-      Call<ReviewResults> reviewCall = NetworkUtils.buildReviewCall(mMovie.getId());
-      callReviews(reviewCall);
     }
   }
 
@@ -120,6 +113,20 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
     RecyclerView.ItemDecoration itemDecoration = new
         DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
     mVideoRecyclerView.addItemDecoration(itemDecoration);
+
+  }
+
+  public void setupReviewRecycler(int id) {
+    Call<ReviewResults> reviewCall = NetworkUtils.buildReviewCall(mMovie.getId());
+    callReviews(reviewCall);
+
+    LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(
+        this, LinearLayoutManager.VERTICAL, false);
+
+    mReviewRecyclerView.setLayoutManager(reviewLayoutManager);
+    RecyclerView.ItemDecoration itemDecoration = new
+        DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+    mReviewRecyclerView.addItemDecoration(itemDecoration);
   }
 
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -202,7 +209,8 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
       @Override
       public void onResponse(Call<ReviewResults> call, Response<ReviewResults> response) {
         if (response.message().contentEquals("OK")) {
-          Log.i(TAG, response.body().toString());
+          Log.i(TAG, response.body().getReviewList().toString());
+          onReviewsAcquired(response.body().getReviewList());
         } else Log.e(TAG, response.message());
       }
 
@@ -218,9 +226,13 @@ public class DetailActivity extends AppCompatActivity implements VideoResults.Vi
 
   @Override
   public void onVideosAcquired(List<Video> videos) {
-    mVideos = videos;
     mVideoTextView.setVisibility(View.VISIBLE);
-    mVideoRecyclerView.setAdapter(new VideoAdapter(mVideos));
+    mVideoRecyclerView.setAdapter(new VideoAdapter(videos));
+  }
+
+  public void onReviewsAcquired(List<Review> reviews) {
+    mReviewTextView.setVisibility(View.VISIBLE);
+    mReviewRecyclerView.setAdapter(new ReviewAdapter(reviews));
   }
 
 }
