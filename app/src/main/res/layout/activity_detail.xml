@@ -32,14 +32,6 @@
         android:layout_margin="8dp"
         android:orientation="vertical">
 
-        <TextView
-          android:id="@+id/titleTextView"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textSize="24sp"
-          style="@style/Title"
-          tools:text="Title of Movie"/>
-
         <RatingBar
           android:id="@+id/ratingBar"
           style="?android:attr/ratingBarStyleSmall"

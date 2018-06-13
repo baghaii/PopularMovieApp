@@ -43,7 +43,6 @@ public class DetailActivity extends AppCompatActivity implements
   private static final String TAG = "DetailActivity";
   private static final String MOVIE_DATA = "MovieData";
 
-  private TextView mTitleTextView;
   private TextView mReleaseDateTextView;
   private TextView mSynopsisTextView;
   private RatingBar mRatingBar;
@@ -59,7 +58,6 @@ public class DetailActivity extends AppCompatActivity implements
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_detail);
-    mTitleTextView = findViewById(R.id.titleTextView);
     mReleaseDateTextView = findViewById(R.id.releaseDataTextView);
 
     mSynopsisTextView = findViewById(R.id.synopsisTextView);
@@ -82,7 +80,7 @@ public class DetailActivity extends AppCompatActivity implements
 
     if (data != null && data.containsKey(MOVIE_DATA)) {
       mMovie = data.getParcelable(MOVIE_DATA);
-      mTitleTextView.setText(mMovie.getTitle());
+      setTitle(mMovie.getTitle());
       mReleaseDateTextView.setText(mMovie.getReleaseDate());
       mSynopsisTextView.setText(mMovie.getOverview());
       mRatingBar.setRating((float) mMovie.getVoteAverage() / (float) 2.0);
@@ -226,13 +224,17 @@ public class DetailActivity extends AppCompatActivity implements
 
   @Override
   public void onVideosAcquired(List<Video> videos) {
-    mVideoTextView.setVisibility(View.VISIBLE);
-    mVideoRecyclerView.setAdapter(new VideoAdapter(videos));
+    if (!videos.isEmpty()) {
+      mVideoTextView.setVisibility(View.VISIBLE);
+      mVideoRecyclerView.setAdapter(new VideoAdapter(videos));
+    }
   }
 
   public void onReviewsAcquired(List<Review> reviews) {
-    mReviewTextView.setVisibility(View.VISIBLE);
-    mReviewRecyclerView.setAdapter(new ReviewAdapter(reviews));
+    if (!reviews.isEmpty()) {
+      mReviewTextView.setVisibility(View.VISIBLE);
+      mReviewRecyclerView.setAdapter(new ReviewAdapter(reviews));
+    }
   }
 
 }
