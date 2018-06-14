@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
 <android.support.constraint.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -57,87 +63,79 @@
     app:layout_constraintStart_toEndOf="@+id/releaseLabelTextView"
     tools:text="2/10/2010"/>
 
-
-  <android.support.v4.widget.NestedScrollView
-    android:id="@+id/nestedScrollView"
-    android:layout_width="0dp"
-    android:layout_height="match_parent"
-    android:layout_marginStart="@dimen/double_margin"
-    android:layout_marginTop="@dimen/margin"
-    android:layout_marginBottom="@dimen/margin"
-    app:layout_constraintEnd_toEndOf="parent"
+  <TextView
+    android:id="@+id/synopsisLabelTextView"
+    style="@style/CustomLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:text="@string/synopsis_label"
     app:layout_constraintStart_toEndOf="@+id/imageView"
-    app:layout_constraintTop_toTopOf="parent">
+    app:layout_constraintTop_toTopOf="@+id/imageView"/>
 
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_marginBottom="8dp"
-      android:orientation="vertical">
+  <TextView
+    android:id="@+id/synopsisTextView"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="16dp"
+    android:textSize="16sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="@+id/synopsisLabelTextView"
+    app:layout_constraintTop_toBottomOf="@+id/synopsisLabelTextView"/>
 
-      <TextView
-        android:id="@+id/synopsisLabelTextView"
-        style="@style/CustomLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="4dp"
-        android:text="@string/synopsis_label"
-        />
+  <TextView
+    android:id="@+id/video_label_textview"
+    style="@style/CustomLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginTop="8dp"
+    android:text="@string/videos"
+    android:visibility="gone"
+    app:layout_constraintBottom_toTopOf="@+id/video_recycler_view"
+    app:layout_constraintStart_toStartOf="@+id/synopsisLabelTextView"
+    app:layout_constraintTop_toBottomOf="@+id/synopsisTextView"/>
 
-      <!-- https://stackoverflow.com/questions/1748977/making-textview-scrollable-on-android#3256305 -->
-      <TextView
-        android:id="@+id/synopsisTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="4dp"
-        android:maxLines="5"
-        android:scrollbars="vertical"
-        android:textSize="16sp"
-        />
-
-
-      <TextView
-        android:id="@+id/video_label_textview"
-        style="@style/CustomLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/videos"
-        android:visibility="gone"
-        />
-
-      <TextView
-        android:id="@+id/review_label_textview"
-        style="@style/CustomLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/reviews"
-        android:visibility="gone"
-        />
+  <TextView
+    android:id="@+id/review_label_textview"
+    style="@style/CustomLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:text="@string/reviews"
+    android:visibility="gone"
+    app:layout_constraintStart_toStartOf="@+id/video_label_textview"
+    app:layout_constraintTop_toBottomOf="@+id/video_recycler_view"/>
 
       <!-- TODO This landscape view is not quite working on long reviews. -->
 
-      <android.support.v7.widget.RecyclerView
-        android:id="@+id/video_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"/>
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/video_recycler_view"
+    android:layout_width="0dp"
+    android:layout_height="80dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="8dp"
+    app:layout_constraintBottom_toTopOf="@+id/review_recycler_view"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="1.0"
+    app:layout_constraintStart_toStartOf="@+id/review_recycler_view"
+    app:layout_constraintTop_toBottomOf="@+id/synopsisTextView"/>
 
-      <android.support.v7.widget.RecyclerView
-        android:id="@+id/review_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        />
-    </LinearLayout>
-  </android.support.v4.widget.NestedScrollView>
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/review_recycler_view"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toEndOf="@+id/imageView"
+    app:layout_constraintTop_toBottomOf="@+id/review_label_textview"/>
 
 </android.support.constraint.ConstraintLayout>
-
+</ScrollView>

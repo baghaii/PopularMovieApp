@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
+import com.sepidehmiller.popularmoviesapp.database.FavoriteEntry;
 
 public class MovieData implements Parcelable {
 
@@ -22,6 +23,7 @@ public class MovieData implements Parcelable {
   private final String mPosterPath;
 
   @SerializedName("overview")
+
   private final String mOverview;
 
   @SerializedName("id")
@@ -39,6 +41,17 @@ public class MovieData implements Parcelable {
     mPosterPath = posterPath;
     mOverview = overview;
     mId = id;
+  }
+
+  //TODO - Expand database to contain other fields
+  public MovieData(FavoriteEntry favoriteEntry) {
+    mTitle = favoriteEntry.getTitle();
+    mId = favoriteEntry.getId();
+    mPosterPath = favoriteEntry.getImagePath();
+    mReleaseDate = null;
+    mVoteAverage = 0;
+    mOverview = null;
+    mFavorite = 1;
   }
 
   //http://www.vogella.com/tutorials/AndroidParcelable/article.html

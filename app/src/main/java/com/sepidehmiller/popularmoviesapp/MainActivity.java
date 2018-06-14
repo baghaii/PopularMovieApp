@@ -1,25 +1,19 @@
 package com.sepidehmiller.popularmoviesapp;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
 
-import com.squareup.picasso.Picasso;
+import com.sepidehmiller.popularmoviesapp.database.AppDatabase;
+import com.sepidehmiller.popularmoviesapp.database.FavoriteEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +25,12 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements MovieAPIResults.DataAcquiredListener  {
 
   private static final String TAG = "MainActivity";
-  private static final String MOVIE_DATA = "MovieData";
   private static final String SORT_ORDER = "SortOrder";
   private static final String FAVORITE = "favorite";
 
   private SharedPreferences mSharedPreferences;
 
-  private String mSortOrder = NetworkUtils.POPULAR;
+  private String mSortOrder;
 
   private MovieAdapter mMovieAdapter;
   private RecyclerView mRecyclerView;
@@ -69,12 +62,18 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
       mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
     }
 
-    mMovieAdapter = new MovieAdapter(new ArrayList<MovieData>());
+    mMovieAdapter = new MovieAdapter(getApplicationContext(), new ArrayList<MovieData>());
     mRecyclerView.setAdapter(mMovieAdapter);
 
-    Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
+    mSortOrder = mSharedPreferences.getString(SORT_ORDER, NetworkUtils.POPULAR);
 
-    callAPI(call);
+    if (!mSortOrder.contentEquals(FAVORITE)) {
+      Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
+      callAPI(call);
+    } else {
+      loadFavorites();
+    }
+
 
   }
 
@@ -107,22 +106,21 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
     MenuItem top_rated = menu.getItem(1);
     MenuItem favorite = menu.getItem(2  );
 
-    if (mSharedPreferences.contains(SORT_ORDER)) {
-      String sort = mSharedPreferences.getString(SORT_ORDER, NetworkUtils.POPULAR);
 
-      if (sort.contentEquals(NetworkUtils.TOP_RATED)) {
-        mSortOrder = NetworkUtils.TOP_RATED;
-        top_rated.setChecked(true);
-      } else if (sort.contentEquals(NetworkUtils.POPULAR)) {
-        mSortOrder = NetworkUtils.POPULAR;
-        popular.setChecked(true);
-      } else {
-        mSortOrder = FAVORITE;
+    // Check the correct radio button in the menu.
+    switch(mSortOrder) {
+      case FAVORITE:
         favorite.setChecked(true);
-      }
-
-      Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
-      callAPI(call);
+        break;
+      case NetworkUtils.TOP_RATED:
+        top_rated.setChecked(true);
+        break;
+      case NetworkUtils.POPULAR:
+        popular.setChecked(true);
+        break;
+      default:
+        popular.setChecked(true);
+        break;
     }
 
     return true;
@@ -150,8 +148,10 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
         return true;
       case R.id.menu_item_favorite:
         toggleMenuOption(item);
-        editor.putString(SORT_ORDER, "favorite");
+        mSortOrder = FAVORITE;
+        editor.putString(SORT_ORDER, mSortOrder);
         editor.apply();
+        loadFavorites();
         return true;
       default:
         return false;
@@ -166,97 +166,20 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
     }
   }
 
-  // The adapter and holder classes were informed by examples in Chapter 24 of the book mentioned
-  // above.
+  public void loadFavorites() {
+    List<FavoriteEntry> favorites =
+        AppDatabase.getInstance(getApplicationContext()).favoriteDao().loadAllFavorites();
 
-  //https://piercezaifman.com/click-listener-for-recyclerview-adapter/
+    List<MovieData> movieList = new ArrayList<MovieData>();
 
-  public interface RecyclerViewClickListener {
-    void onClick(View view, int i);
+    for (FavoriteEntry fave : favorites) {
+       movieList.add(new MovieData(fave));
+    }
+
+    onMovieDataAcquired(movieList);
+    mMovieAdapter.setMovies(movieList);
+    mMovieAdapter.notifyDataSetChanged();
   }
-
-  private class MovieHolder extends RecyclerView.ViewHolder  implements View.OnClickListener {
-    private final ImageButton mImageButton;
-    private RecyclerViewClickListener mRecyclerViewClickListener;
-
-
-    public MovieHolder(View itemView, RecyclerViewClickListener listener) {
-      super(itemView);
-
-      mImageButton = itemView.findViewById(R.id.list_item_movie_button);
-      mRecyclerViewClickListener = listener;
-      mImageButton.setOnClickListener(this);
-    }
-
-    public void bindDrawable(Drawable drawable, final MovieData movie) {
-
-      /*
-        The placeholder imagery used in this app comes from
-        https://www.pexels.com/photo/board-cinema-cinematography-clapper-board-274937/ */
-
-      // https://stackoverflow.com/questions/20823249/resize-image-to-full-width-and-fixed-height-with-picasso
-      Picasso.get()
-          .load(movie.getSmallPosterUrl())
-          .fit()
-          .centerCrop()
-          .placeholder(drawable)
-          .error(drawable)
-          .into(mImageButton);
-
-    }
-
-    @Override
-    public void onClick(View v) {
-      mRecyclerViewClickListener.onClick(v, getAdapterPosition());
-    }
-  }
-
-  private class MovieAdapter extends RecyclerView.Adapter<MovieHolder> {
-    private List<MovieData> mMovies;
-
-    public MovieAdapter(List<MovieData> movies) {
-      mMovies = movies;
-    }
-
-    @NonNull
-    @Override
-    public MovieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-      LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      View view = inflater.inflate(R.layout.list_item_movie, parent, false);
-
-      RecyclerViewClickListener listener = new RecyclerViewClickListener() {
-        @Override
-        public void onClick(View view, int i) {
-          Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-          intent.putExtra(MOVIE_DATA, mMovies.get(i));
-          startActivity(intent);
-        }
-      };
-
-      return new MovieHolder(view, listener);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MovieHolder holder, int position) {
-      Drawable placeholder = getResources().getDrawable(R.drawable.cinema);
-      holder.bindDrawable(placeholder, mMovies.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-      return mMovies.size();
-    }
-
-    public void setMovies(List<MovieData> movies) {
-      mMovies = movies;
-    }
-  }
-
-  /*
-     This is part of the design pattern where we have created an
-     MovieAPIResults.DataAcquiredListener interface and implemented
-     that interface here to listen for the asynchronous task to return.
-   */
 
   @Override
   public void onMovieDataAcquired(List<MovieData> movies) {

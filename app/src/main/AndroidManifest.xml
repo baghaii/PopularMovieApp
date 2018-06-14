@@ -21,10 +21,6 @@
     <activity android:name=".DetailActivity">
     </activity>
 
-    <provider
-      android:name="com.sepidehmiller.popularmoviesapp.MovieContentProvider"
-      android:authorities="com.sepidehmiller.popularmoviesapp"
-      android:exported="false"/>
   </application>
 
 </manifest>
