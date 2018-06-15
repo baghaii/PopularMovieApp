@@ -13,10 +13,26 @@ public class FavoriteEntry {
   private String imagePath;
   private String title;
 
-  public FavoriteEntry(int id, String title, String imagePath) {
+  @ColumnInfo(name="vote_average")
+  private double voteAverage;
+
+  @ColumnInfo(name="release_date")
+  private String releaseDate;
+
+  private String overview;
+
+  public FavoriteEntry(int id, String title,
+                       String imagePath,
+                       double voteAverage,
+                       String releaseDate,
+                       String overview) {
+
     this.id = id;
     this.title = title;
     this.imagePath = imagePath;
+    this.voteAverage = voteAverage;
+    this.releaseDate = releaseDate;
+    this.overview = overview;
   }
 
   public int getId() {
@@ -31,6 +47,18 @@ public class FavoriteEntry {
     return imagePath;
   }
 
+  public double getVoteAverage() {
+    return voteAverage;
+  }
+
+  public String getReleaseDate() {
+    return releaseDate;
+  }
+
+  public String getOverview() {
+    return overview;
+  }
+
   public void setId(int id) {
     this.id = id;
   }
@@ -43,4 +71,15 @@ public class FavoriteEntry {
     this.imagePath = imagePath;
   }
 
+  public void setVoteAverage(int voteAverage) {
+    this.voteAverage = voteAverage;
+  }
+
+  public void setReleaseDate(String releaseDate) {
+    this.releaseDate = releaseDate;
+  }
+
+  public void setOverview(String overview) {
+    this.overview = overview;
+  }
 }

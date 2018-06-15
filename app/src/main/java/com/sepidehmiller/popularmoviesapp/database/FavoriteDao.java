@@ -13,7 +13,10 @@ import java.util.List;
 public interface FavoriteDao {
 
   @Query("SELECT * FROM favorites")
-  List <FavoriteEntry> loadAllFavorites();
+  List<FavoriteEntry> loadAllFavorites();
+
+  @Query("SELECT * FROM favorites where id=(:movie_id)")
+  List<FavoriteEntry> loadMovieEntry(int movie_id);
 
   @Insert
   void insertFavorite(FavoriteEntry favoriteEntry);

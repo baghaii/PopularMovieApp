@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
   private static final String SORT_ORDER = "SortOrder";
   private static final String FAVORITE = "favorite";
 
+  private AppDatabase mDb;
+
   private SharedPreferences mSharedPreferences;
 
   private String mSortOrder;
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
     mRecyclerView.setAdapter(mMovieAdapter);
 
     mSortOrder = mSharedPreferences.getString(SORT_ORDER, NetworkUtils.POPULAR);
+
+    mDb = AppDatabase.getInstance(getApplicationContext());
 
     if (!mSortOrder.contentEquals(FAVORITE)) {
       Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
@@ -166,19 +170,40 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
     }
   }
 
-  public void loadFavorites() {
-    List<FavoriteEntry> favorites =
-        AppDatabase.getInstance(getApplicationContext()).favoriteDao().loadAllFavorites();
+  @Override
+  protected void onResume() {
+    super.onResume();
 
-    List<MovieData> movieList = new ArrayList<MovieData>();
-
-    for (FavoriteEntry fave : favorites) {
-       movieList.add(new MovieData(fave));
+    if (mSortOrder.contentEquals(FAVORITE)) {
+      loadFavorites();
     }
+  }
 
-    onMovieDataAcquired(movieList);
-    mMovieAdapter.setMovies(movieList);
-    mMovieAdapter.notifyDataSetChanged();
+  public void loadFavorites() {
+
+    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+      @Override
+      public void run() {
+        final List<FavoriteEntry> favorites =
+            mDb.favoriteDao().loadAllFavorites();
+        List<MovieData> movieList = new ArrayList<MovieData>();
+
+        for (FavoriteEntry fave : favorites) {
+              movieList.add(new MovieData(fave));
+        }
+
+        final List<MovieData> movies = movieList;
+
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            mMovieAdapter.setMovies(movies);
+            mMovieAdapter.notifyDataSetChanged();
+          }
+        });
+      }
+    });
+
   }
 
   @Override

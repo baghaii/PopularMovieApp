@@ -43,14 +43,13 @@ public class MovieData implements Parcelable {
     mId = id;
   }
 
-  //TODO - Expand database to contain other fields
   public MovieData(FavoriteEntry favoriteEntry) {
     mTitle = favoriteEntry.getTitle();
     mId = favoriteEntry.getId();
     mPosterPath = favoriteEntry.getImagePath();
-    mReleaseDate = null;
-    mVoteAverage = 0;
-    mOverview = null;
+    mReleaseDate = favoriteEntry.getReleaseDate();
+    mVoteAverage = favoriteEntry.getVoteAverage();
+    mOverview = favoriteEntry.getOverview();
     mFavorite = 1;
   }
 

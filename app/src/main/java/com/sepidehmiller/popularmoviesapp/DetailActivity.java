@@ -101,6 +101,21 @@ public class DetailActivity extends AppCompatActivity implements
       setupVideoRecycler(mMovie.getId());
       setupReviewRecycler(mMovie.getId());
 
+      if (mMovie.isFavorite() == 0) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+          @Override
+          public void run() {
+
+            List<FavoriteEntry> thisFavorite =
+                mDb.favoriteDao().loadMovieEntry(mMovie.getId());
+
+            if (!thisFavorite.isEmpty()) {
+              mMovie.setFavorite(1);
+            }
+          }
+        });
+      }
+
     }
   }
 
@@ -140,12 +155,7 @@ public class DetailActivity extends AppCompatActivity implements
     // If the movie is a favorite, color it appropriately.
 
     if (mMovie.isFavorite() == 1) {
-      MenuItem item = menu.getItem(0);
-      Drawable icon = item.getIcon();
-      Drawable newIcon = icon.mutate();
-      DrawableCompat.setTint(newIcon, getResources().getColor(R.color.colorAccent));
-      DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
-      item.setIcon(newIcon);
+      colorIconRed(menu.getItem(0));
     }
 
     return true;
@@ -165,36 +175,47 @@ public class DetailActivity extends AppCompatActivity implements
 
   public void addMovieToDb() {
 
-    FavoriteEntry favoriteEntry = new FavoriteEntry(mMovie.getId(),
+    final FavoriteEntry favoriteEntry = new FavoriteEntry(mMovie.getId(),
         mMovie.getTitle(),
-        mMovie.getPosterPath());
+        mMovie.getPosterPath(),
+        mMovie.getVoteAverage(),
+        mMovie.getReleaseDate(),
+        mMovie.getOverview());
 
     if (mMovie.isFavorite() == 1) {
-      mDb.favoriteDao().insertFavorite(favoriteEntry);
+      AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        @Override
+        public void run() {
+          mDb.favoriteDao().insertFavorite(favoriteEntry);
+        }
+      });
     } else {
-      mDb.favoriteDao().deleteFavorite(favoriteEntry);
+      AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        @Override
+        public void run() {
+          mDb.favoriteDao().deleteFavorite(favoriteEntry);
+        }
+      });
     }
-
   }
 
   public void changeIconColor(MenuItem item) {
-    Drawable icon = item.getIcon();
-    Drawable newIcon = icon.mutate();
+
     /*
       How do we change icon colors?
       https://stackoverflow.com/questions/32924986/change-fill-color-on-vector-asset-in-android-studio
      */
     if (mMovie.isFavorite() == 0) {
-      DrawableCompat.setTint(newIcon, getResources().getColor(R.color.colorAccent));
-      item.setIcon(newIcon);
+      colorIconRed(item);
       mMovie.setFavorite(1);
     } else {
+      Drawable icon = item.getIcon();
+      Drawable newIcon = icon.mutate();
       DrawableCompat.setTint(newIcon, getResources().getColor(R.color.white));
+      DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
+      item.setIcon(newIcon);
       mMovie.setFavorite(0);
     }
-
-    DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
-    item.setIcon(newIcon);
   }
 
 
@@ -252,6 +273,14 @@ public class DetailActivity extends AppCompatActivity implements
       mReviewTextView.setVisibility(View.VISIBLE);
       mReviewRecyclerView.setAdapter(new ReviewAdapter(reviews));
     }
+  }
+
+  public void colorIconRed(MenuItem item) {
+    Drawable icon = item.getIcon();
+    Drawable newIcon = icon.mutate();
+    DrawableCompat.setTint(newIcon, getResources().getColor(R.color.colorAccent));
+    DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
+    item.setIcon(newIcon);
   }
 
 }
