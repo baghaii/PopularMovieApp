@@ -1,9 +1,12 @@
 package com.sepidehmiller.popularmoviesapp;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -181,26 +184,27 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
 
   public void loadFavorites() {
 
-    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+    Log.d(TAG, "Retrieving data from database");
+
+    final LiveData<List<FavoriteEntry>> favorites =
+        mDb.favoriteDao().loadAllFavorites();
+
+    favorites.observe(this, new Observer<List<FavoriteEntry>>() {
+
       @Override
-      public void run() {
-        final List<FavoriteEntry> favorites =
-            mDb.favoriteDao().loadAllFavorites();
-        List<MovieData> movieList = new ArrayList<MovieData>();
+      public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
+        Log.d(TAG, "Receiving changes from LiveData");
 
-        for (FavoriteEntry fave : favorites) {
-              movieList.add(new MovieData(fave));
-        }
-
-        final List<MovieData> movies = movieList;
-
-        runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            mMovieAdapter.setMovies(movies);
-            mMovieAdapter.notifyDataSetChanged();
+        if (mSortOrder.contentEquals(FAVORITE)) {
+          List<MovieData> movieList = new ArrayList<MovieData>();
+          for (FavoriteEntry fave : favoriteEntries) {
+            movieList.add(new MovieData(fave));
           }
-        });
+
+          final List<MovieData> movies = movieList;
+          mMovieAdapter.setMovies(movies);
+          mMovieAdapter.notifyDataSetChanged();
+        }
       }
     });
 

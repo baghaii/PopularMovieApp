@@ -106,10 +106,10 @@ public class DetailActivity extends AppCompatActivity implements
           @Override
           public void run() {
 
-            List<FavoriteEntry> thisFavorite =
+           FavoriteEntry thisFavorite =
                 mDb.favoriteDao().loadMovieEntry(mMovie.getId());
 
-            if (!thisFavorite.isEmpty()) {
+            if (thisFavorite != null) {
               mMovie.setFavorite(1);
             }
           }
