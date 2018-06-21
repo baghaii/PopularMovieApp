@@ -1,6 +1,5 @@
 package com.sepidehmiller.popularmoviesapp;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.PorterDuff;
@@ -20,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.facebook.stetho.Stetho;
@@ -45,6 +45,8 @@ public class DetailActivity extends AppCompatActivity implements
 
   private static final String TAG = "DetailActivity";
   private static final String MOVIE_DATA = "MovieData";
+  private static final String SCROLL_POSITIONS = "ScrollPositions";
+  private static final String FAVORITE = "favorite";
 
   private AppDatabase mDb;
 
@@ -58,6 +60,8 @@ public class DetailActivity extends AppCompatActivity implements
   private TextView mReviewTextView;
   private RecyclerView mVideoRecyclerView;
   private RecyclerView mReviewRecyclerView;
+
+  private ScrollView mScrollView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,8 @@ public class DetailActivity extends AppCompatActivity implements
     mReviewTextView = findViewById(R.id.review_label_textview);
     mVideoRecyclerView = findViewById(R.id.video_recycler_view);
     mReviewRecyclerView = findViewById(R.id.review_recycler_view);
+    mScrollView = findViewById(R.id.scrollView);
+
 
     Stetho.initializeWithDefaults(this);
 
@@ -107,18 +113,16 @@ public class DetailActivity extends AppCompatActivity implements
 
       if (mMovie.isFavorite() == 0) {
 
-        final LiveData<FavoriteEntry> thisFavorite =
-            mDb.favoriteDao().loadMovieEntry(mMovie.getId());
-
         DetailViewModelFactory factory = new DetailViewModelFactory(mDb, mMovie.getId());
-        DetailViewModel viewModel = ViewModelProviders.of(this, factory)
+        final DetailViewModel viewModel = ViewModelProviders.of(this, factory)
             .get(DetailViewModel.class);
 
-        thisFavorite.observe(this, new Observer<FavoriteEntry>() {
+        viewModel.getFavorite().observe(this, new Observer<FavoriteEntry>() {
           @Override
           public void onChanged(@Nullable FavoriteEntry favoriteEntry) {
-            if (thisFavorite.getValue() != null) {
+            if (viewModel.getFavorite().getValue() != null) {
               mMovie.setFavorite(1);
+
             }
           }
         });
@@ -127,7 +131,39 @@ public class DetailActivity extends AppCompatActivity implements
     }
   }
 
+  //How do we save scroll positions?
+  //https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putIntArray(SCROLL_POSITIONS,
+        new int[]{ mScrollView.getScrollX(), mScrollView.getScrollY()});
+    outState.putBoolean(FAVORITE, mMovie.isFavorite() == 1);
+  }
 
+  @Override
+  protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    super.onRestoreInstanceState(savedInstanceState);
+    final int[] position = savedInstanceState.getIntArray(SCROLL_POSITIONS);
+    if (position != null) {
+      mScrollView.post(new Runnable() {
+        @Override
+        public void run() {
+          mScrollView.scrollTo(position[0], position[1]);
+        }
+      });
+    }
+
+    boolean favorite = savedInstanceState.getBoolean(FAVORITE);
+    MenuItem item = findViewById(R.id.menu_item_favorite);
+
+    if (savedInstanceState.getBoolean(FAVORITE)) {
+      mMovie.setFavorite(1);
+    } else {
+      mMovie.setFavorite(0);
+    }
+
+  }
 
   public void setupVideoRecycler(int id) {
     Call<VideoResults> call = NetworkUtils.buildVideoCall(id);
@@ -161,9 +197,10 @@ public class DetailActivity extends AppCompatActivity implements
     inflater.inflate(R.menu.menu_detail, menu);
 
     // If the movie is a favorite, color it appropriately.
-
     if (mMovie.isFavorite() == 1) {
       colorIconRed(menu.getItem(0));
+    } else {
+      colorIconWhite(menu.getItem(0));
     }
 
     return true;
@@ -217,11 +254,7 @@ public class DetailActivity extends AppCompatActivity implements
       colorIconRed(item);
       mMovie.setFavorite(1);
     } else {
-      Drawable icon = item.getIcon();
-      Drawable newIcon = icon.mutate();
-      DrawableCompat.setTint(newIcon, getResources().getColor(R.color.white));
-      DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
-      item.setIcon(newIcon);
+      colorIconWhite(item);
       mMovie.setFavorite(0);
     }
   }
@@ -287,6 +320,14 @@ public class DetailActivity extends AppCompatActivity implements
     Drawable icon = item.getIcon();
     Drawable newIcon = icon.mutate();
     DrawableCompat.setTint(newIcon, getResources().getColor(R.color.colorAccent));
+    DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
+    item.setIcon(newIcon);
+  }
+
+  public void colorIconWhite(MenuItem item) {
+    Drawable icon = item.getIcon();
+    Drawable newIcon = icon.mutate();
+    DrawableCompat.setTint(newIcon, getResources().getColor(R.color.white));
     DrawableCompat.setTintMode(newIcon, PorterDuff.Mode.SRC_IN);
     item.setIcon(newIcon);
   }

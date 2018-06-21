@@ -16,4 +16,6 @@ public class DetailViewModel extends ViewModel {
   public LiveData<FavoriteEntry> getFavorite() {
     return favorite;
   }
+
+
 }

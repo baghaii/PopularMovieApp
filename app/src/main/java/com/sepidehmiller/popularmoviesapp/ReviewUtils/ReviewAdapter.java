@@ -1,8 +1,11 @@
 package com.sepidehmiller.popularmoviesapp.ReviewUtils;
 
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,12 +31,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewHold
     return new ReviewHolder(reviewView);
   }
 
-  //TODO - Maybe use spannables to make this less ugly.
-
   @Override
   public void onBindViewHolder(@NonNull ReviewHolder holder, int position) {
     Review review = mReviews.get(position);
-    holder.mReviewTextView.setText(review.getAuthor() + ": " + review.getContent());
+    SpannableString author = new SpannableString(review.getAuthor() + ": "
+      + review.getContent());
+    author.setSpan(new StyleSpan(Typeface.BOLD), 0, review.getAuthor().length(),
+        0);
+
+    holder.mReviewTextView.setText(author);
   }
 
   @Override
