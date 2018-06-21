@@ -17,7 +17,7 @@ public interface FavoriteDao {
   LiveData<List<FavoriteEntry>> loadAllFavorites();
 
   @Query("SELECT * FROM favorites where id= :movie_id")
-  FavoriteEntry loadMovieEntry(int movie_id);
+  LiveData<FavoriteEntry> loadMovieEntry(int movie_id);
 
   @Insert
   void insertFavorite(FavoriteEntry favoriteEntry);

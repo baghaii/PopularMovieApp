@@ -1,7 +1,7 @@
 package com.sepidehmiller.popularmoviesapp;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
       Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
       callAPI(call);
     } else {
-      loadFavorites();
+      setupViewModel();
     }
 
 
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
         mSortOrder = FAVORITE;
         editor.putString(SORT_ORDER, mSortOrder);
         editor.apply();
-        loadFavorites();
+        setupViewModel();
         return true;
       default:
         return false;
@@ -178,35 +178,36 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
     super.onResume();
 
     if (mSortOrder.contentEquals(FAVORITE)) {
-      loadFavorites();
+      setupViewModel();
     }
   }
 
-  public void loadFavorites() {
+  public void setupViewModel() {
 
-    Log.d(TAG, "Retrieving data from database");
-
-    final LiveData<List<FavoriteEntry>> favorites =
-        mDb.favoriteDao().loadAllFavorites();
-
-    favorites.observe(this, new Observer<List<FavoriteEntry>>() {
-
+    MainViewModel viewModel =  ViewModelProviders.of(this).get(MainViewModel.class);
+    viewModel.getFavoriteMovies().observe(this, new Observer<List<FavoriteEntry>>() {
       @Override
       public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
         Log.d(TAG, "Receiving changes from LiveData");
 
         if (mSortOrder.contentEquals(FAVORITE)) {
           List<MovieData> movieList = new ArrayList<MovieData>();
-          for (FavoriteEntry fave : favoriteEntries) {
-            movieList.add(new MovieData(fave));
-          }
 
-          final List<MovieData> movies = movieList;
-          mMovieAdapter.setMovies(movies);
-          mMovieAdapter.notifyDataSetChanged();
+          if (favoriteEntries != null) {
+            for (FavoriteEntry fave : favoriteEntries) {
+              movieList.add(new MovieData(fave));
+            }
+
+            final List<MovieData> movies = movieList;
+            mMovieAdapter.setMovies(movies);
+            mMovieAdapter.notifyDataSetChanged();
+          }
         }
       }
     });
+
+
+    Log.d(TAG, "Retrieving data from database");
 
   }
 

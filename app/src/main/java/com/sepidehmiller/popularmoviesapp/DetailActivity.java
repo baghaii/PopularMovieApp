@@ -1,8 +1,12 @@
 package com.sepidehmiller.popularmoviesapp;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -102,20 +106,24 @@ public class DetailActivity extends AppCompatActivity implements
       setupReviewRecycler(mMovie.getId());
 
       if (mMovie.isFavorite() == 0) {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+
+        final LiveData<FavoriteEntry> thisFavorite =
+            mDb.favoriteDao().loadMovieEntry(mMovie.getId());
+
+        DetailViewModelFactory factory = new DetailViewModelFactory(mDb, mMovie.getId());
+        DetailViewModel viewModel = ViewModelProviders.of(this, factory)
+            .get(DetailViewModel.class);
+
+        thisFavorite.observe(this, new Observer<FavoriteEntry>() {
           @Override
-          public void run() {
-
-           FavoriteEntry thisFavorite =
-                mDb.favoriteDao().loadMovieEntry(mMovie.getId());
-
-            if (thisFavorite != null) {
+          public void onChanged(@Nullable FavoriteEntry favoriteEntry) {
+            if (thisFavorite.getValue() != null) {
               mMovie.setFavorite(1);
             }
           }
         });
-      }
 
+      }
     }
   }
 
