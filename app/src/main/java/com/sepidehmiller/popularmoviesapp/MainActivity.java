@@ -17,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.sepidehmiller.popularmoviesapp.database.AppDatabase;
-import com.sepidehmiller.popularmoviesapp.database.FavoriteEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,19 +165,19 @@ public class MainActivity extends AppCompatActivity {
     MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
 
-    viewModel.getFavoriteMovies().observe(this, new Observer<List<FavoriteEntry>>() {
+    viewModel.getFavoriteMovies().observe(this, new Observer<List<MovieData>>() {
       @Override
-      public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
+      public void onChanged(@Nullable List<MovieData> favoriteEntries) {
         Log.d(TAG, "Receiving changes from LiveData");
 
         if (mSortOrder.contentEquals(FAVORITE)) {
           List<MovieData> movieList = new ArrayList<MovieData>();
 
           if (favoriteEntries != null) {
-            for (FavoriteEntry fave : favoriteEntries) {
-              movieList.add(new MovieData(fave));
+            for (MovieData fave : favoriteEntries) {
+              fave.setFavorite(1);
             }
-            setAdapter(movieList);
+            setAdapter(favoriteEntries);
           }
         }
       }

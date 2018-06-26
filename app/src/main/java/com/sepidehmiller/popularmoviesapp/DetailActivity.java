@@ -30,7 +30,6 @@ import com.sepidehmiller.popularmoviesapp.VideoUtils.Video;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoAdapter;
 import com.sepidehmiller.popularmoviesapp.VideoUtils.VideoResults;
 import com.sepidehmiller.popularmoviesapp.database.AppDatabase;
-import com.sepidehmiller.popularmoviesapp.database.FavoriteEntry;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -115,12 +114,11 @@ public class DetailActivity extends AppCompatActivity implements
         final DetailViewModel viewModel = ViewModelProviders.of(this, factory)
             .get(DetailViewModel.class);
 
-        viewModel.getFavorite().observe(this, new Observer<FavoriteEntry>() {
+        viewModel.getFavorite().observe(this, new Observer<MovieData>() {
           @Override
-          public void onChanged(@Nullable FavoriteEntry favoriteEntry) {
+          public void onChanged(@Nullable MovieData favoriteEntry) {
             if (viewModel.getFavorite().getValue() != null) {
               mMovie.setFavorite(1);
-
             }
           }
         });
@@ -203,12 +201,13 @@ public class DetailActivity extends AppCompatActivity implements
 
   public void addMovieToDb() {
 
-    final FavoriteEntry favoriteEntry = new FavoriteEntry(mMovie.getId(),
+    final MovieData favoriteEntry = new MovieData(
         mMovie.getTitle(),
-        mMovie.getPosterPath(),
-        mMovie.getVoteAverage(),
         mMovie.getReleaseDate(),
-        mMovie.getOverview());
+        mMovie.getVoteAverage(),
+        mMovie.getPosterPath(),
+        mMovie.getOverview(),
+        mMovie.getId());
 
     if (mMovie.isFavorite() == 1) {
       AppExecutors.getInstance().diskIO().execute(new Runnable() {

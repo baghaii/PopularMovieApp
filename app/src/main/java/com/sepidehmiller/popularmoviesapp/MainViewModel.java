@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.sepidehmiller.popularmoviesapp.database.AppDatabase;
-import com.sepidehmiller.popularmoviesapp.database.FavoriteEntry;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainViewModel extends AndroidViewModel {
-  private LiveData<List<FavoriteEntry>> favoriteMovies;
+  private LiveData<List<MovieData>> favoriteMovies;
   private MutableLiveData<List<MovieData>> popularMovies = new MutableLiveData<>();
   private MutableLiveData<List<MovieData>> topRatedMovies = new MutableLiveData<>();
 
@@ -68,7 +67,7 @@ public class MainViewModel extends AndroidViewModel {
 
   }
 
-  public LiveData<List<FavoriteEntry>> getFavoriteMovies() {
+  public LiveData<List<MovieData>> getFavoriteMovies() {
     return favoriteMovies;
   }
 

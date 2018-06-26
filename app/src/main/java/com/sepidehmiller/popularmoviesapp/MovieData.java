@@ -1,106 +1,92 @@
 package com.sepidehmiller.popularmoviesapp;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-import com.sepidehmiller.popularmoviesapp.database.FavoriteEntry;
 
+// This class is set up to deal with both GSON and Room.
+// @SerializedName is for GSON.
+// Most of the other annotations are for Room.
+
+@Entity(tableName = "favorites")
 public class MovieData implements Parcelable {
 
+  @Ignore
   private static final String BASE_PATH = "http://image.tmdb.org/t/p/w185/";
 
-  @SerializedName("title")
-  private final String mTitle;
+  @PrimaryKey
+  private int id;
 
+  private String title;
+
+  @ColumnInfo(name="release_date")
   @SerializedName("release_date")
-  private final String mReleaseDate;
+  private String releaseDate;
 
+  @ColumnInfo(name="vote_average")
   @SerializedName("vote_average")
-  private final double mVoteAverage;
+  private double voteAverage;
 
+  @ColumnInfo(name="poster_path")
   @SerializedName("poster_path")
-  private final String mPosterPath;
+  private String posterPath;
 
-  @SerializedName("overview")
-
-  private final String mOverview;
-
-  @SerializedName("id")
-  private final int mId;
+  private String overview;
 
   //Parcelable doesn't let you write a single boolean.
   //Using 0 to specify something that is not a favorite.
   //Using 1 to specify a favorite.
-  private int mFavorite = 0;
 
-  public MovieData(String title, String releaseDate, double voteAverage, String posterPath, String overview, int id) {
-    mTitle = title;
-    mReleaseDate = releaseDate;
-    mVoteAverage = voteAverage;
-    mPosterPath = posterPath;
-    mOverview = overview;
-    mId = id;
-  }
+  @Ignore
+  private int favorite = 0;
 
-  public MovieData(FavoriteEntry favoriteEntry) {
-    mTitle = favoriteEntry.getTitle();
-    mId = favoriteEntry.getId();
-    mPosterPath = favoriteEntry.getImagePath();
-    mReleaseDate = favoriteEntry.getReleaseDate();
-    mVoteAverage = favoriteEntry.getVoteAverage();
-    mOverview = favoriteEntry.getOverview();
-    mFavorite = 1;
+  public MovieData(String title,
+                   String releaseDate,
+                   double voteAverage,
+                   String posterPath,
+                   String overview,
+                   int id) {
+
+    this.title = title;
+    this.releaseDate = releaseDate;
+    this.voteAverage = voteAverage;
+    this.posterPath = posterPath;
+    this.overview = overview;
+    this.id = id;
   }
 
   //http://www.vogella.com/tutorials/AndroidParcelable/article.html
   public MovieData(Parcel in) {
-    mTitle = in.readString();
-    mReleaseDate = in.readString();
-    mVoteAverage = in.readDouble();
-    mPosterPath = in.readString();
-    mOverview = in.readString();
-    mId = in.readInt();
-    mFavorite = in.readInt();
+    title = in.readString();
+    releaseDate = in.readString();
+    voteAverage = in.readDouble();
+    posterPath = in.readString();
+    overview = in.readString();
+    id = in.readInt();
+    favorite = in.readInt();
 
   }
 
-  public String getTitle() {
-    return mTitle;
-  }
-
-  public String getReleaseDate() {
-    return mReleaseDate;
-  }
-
-  public String getPosterPath() {
-    return mPosterPath;
-  }
-
-  public String getOverview() {
-    return mOverview;
-  }
-
-  public double getVoteAverage() {
-    return mVoteAverage;
-  }
 
   public String getSmallPosterUrl() {
     return BASE_PATH + getPosterPath();
   }
 
-  public int getId() { return mId; }
-
   /* writeToParcel and describeContents are used to write parcels. */
   @Override
   public void writeToParcel(Parcel dest, int flags) {
-      dest.writeString(mTitle);
-      dest.writeString(mReleaseDate);
-      dest.writeDouble(mVoteAverage);
-      dest.writeString(mPosterPath);
-      dest.writeString(mOverview);
-      dest.writeInt(mId);
-      dest.writeInt(mFavorite);
+      dest.writeString(title);
+      dest.writeString(releaseDate);
+      dest.writeDouble(voteAverage);
+      dest.writeString(posterPath);
+      dest.writeString(overview);
+      dest.writeInt(id);
+      dest.writeInt(favorite);
   }
 
   @Override
@@ -119,10 +105,52 @@ public class MovieData implements Parcelable {
   };
 
   public int isFavorite() {
-    return mFavorite;
+    return favorite;
   }
 
   public void setFavorite(int favorite) {
-    mFavorite = favorite;
+    this.favorite = favorite;
   }
+
+  public int getId() {
+    return id;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getPosterPath() {
+    return posterPath;
+  }
+
+  public double getVoteAverage() {
+    return voteAverage;
+  }
+
+  public String getReleaseDate() {
+    return releaseDate;
+  }
+
+  public String getOverview() {
+    return overview;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setPosterPath(String posterPath) { this.posterPath = posterPath; }
+
+  public void setVoteAverage(double voteAverage) {this.voteAverage = voteAverage;}
+
+  public void setReleaseDate(String releaseDate) {this.releaseDate = releaseDate;}
+
+  public void setOverview(String overview) {this.overview = overview;}
+
+
 }

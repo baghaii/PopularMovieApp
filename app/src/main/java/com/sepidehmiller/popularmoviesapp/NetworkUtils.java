@@ -42,7 +42,5 @@ public class NetworkUtils {
     Call<ReviewResults> call = sMovieAPIInterface.getReviewData(videoId, API_KEY);
     return call;
   }
-
-
-
+  
 }

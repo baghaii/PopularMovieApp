@@ -6,7 +6,9 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.util.Log;
 
-@Database(entities = {FavoriteEntry.class}, version = 1, exportSchema = false)
+import com.sepidehmiller.popularmoviesapp.MovieData;
+
+@Database(entities = {MovieData.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
   private static final String TAG = AppDatabase.class.getSimpleName();
   private static final Object LOCK = new Object();

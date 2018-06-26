@@ -10,7 +10,7 @@ Get your own API key at [themoviedb.org](https://www.themoviedb.org), and change
 Then you should be able to build this project in Android Studio.
 
 ## Features
-In this project, I learned to use Retrofit and GSON to fetch data from the API and to populate an ArrayList with the movie data.
+In this project, I learned to use Retrofit and GSON to fetch data from the API and to populate an ArrayList with the movie data. I also learned how to use Room to set up the Favorite view.
 
 ## Demo
-<img src="images/movie.gif" height="600">
+<img src="images/movie.gif" alt="App Demo Video" height="600">
