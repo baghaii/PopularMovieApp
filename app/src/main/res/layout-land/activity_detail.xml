@@ -110,8 +110,6 @@
     app:layout_constraintStart_toStartOf="@+id/video_label_textview"
     app:layout_constraintTop_toBottomOf="@+id/video_recycler_view"/>
 
-      <!-- TODO This landscape view is not quite working on long reviews. -->
-
   <android.support.v7.widget.RecyclerView
     android:id="@+id/video_recycler_view"
     android:layout_width="0dp"

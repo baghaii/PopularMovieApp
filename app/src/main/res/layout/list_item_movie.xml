@@ -8,4 +8,4 @@
              android:scaleType="centerCrop"
              android:layout_margin="4dp"
              android:background="@android:color/white"
-             tools:text="Movie Name"/>
+             />

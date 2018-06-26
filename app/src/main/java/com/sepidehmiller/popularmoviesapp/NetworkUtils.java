@@ -40,8 +40,9 @@ public class NetworkUtils {
 
   public static Call<ReviewResults> buildReviewCall(int videoId) {
     Call<ReviewResults> call = sMovieAPIInterface.getReviewData(videoId, API_KEY);
-
     return call;
   }
+
+
 
 }

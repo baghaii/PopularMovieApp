@@ -11,3 +11,6 @@ Then you should be able to build this project in Android Studio.
 
 ## Features
 In this project, I learned to use Retrofit and GSON to fetch data from the API and to populate an ArrayList with the movie data.
+
+## Demo
+<img src="images/movie.gif" height="600">

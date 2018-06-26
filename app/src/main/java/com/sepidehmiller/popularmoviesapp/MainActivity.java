@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -22,14 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements MovieAPIResults.DataAcquiredListener  {
+public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = "MainActivity";
   private static final String SORT_ORDER = "SortOrder";
   private static final String FAVORITE = "favorite";
+  private static final String RECYCLER_POSITION = "RecyclerViewPosition";
 
   private AppDatabase mDb;
 
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
 
   private MovieAdapter mMovieAdapter;
   private RecyclerView mRecyclerView;
+  private Parcelable recyclerPosition;
 
 
   @Override
@@ -61,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
           Chapter 18 p 327 of Android Programming: Big Nerd Ranch Guide 2 ed for setting
           RecyclerView GridLayoutManager.
        */
-
       mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
     } else {
       mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
@@ -74,36 +74,29 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
 
     mDb = AppDatabase.getInstance(getApplicationContext());
 
-    if (!mSortOrder.contentEquals(FAVORITE)) {
-      Call<MovieAPIResults> call = NetworkUtils.buildAPICall(mSortOrder);
-      callAPI(call);
-    } else {
-      setupViewModel();
+    setupViewModel();
+
+
+  }
+
+  // Reviewer recommended saving RecyclerView position
+  // https://stackoverflow.com/questions/27816217/how-to-save-recyclerviews-scroll-position-using-recyclerview-state
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putParcelable(RECYCLER_POSITION,
+        mRecyclerView.getLayoutManager().onSaveInstanceState());
+  }
+
+  @Override
+  protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    super.onRestoreInstanceState(savedInstanceState);
+    if (savedInstanceState != null && savedInstanceState.containsKey(RECYCLER_POSITION)) {
+      recyclerPosition = savedInstanceState.getParcelable(RECYCLER_POSITION);
     }
-
-
   }
 
-  public void callAPI(Call<MovieAPIResults> call) {
-    // Call the API Asynchronously
-    call.enqueue(new Callback<MovieAPIResults>() {
-
-      @Override
-      public void onResponse(Call<MovieAPIResults> call, Response<MovieAPIResults> response) {
-
-        if (response.message().contentEquals("OK") ) {
-          onMovieDataAcquired(response.body().getMovieDataList());
-        } else {
-          Log.e(TAG, "Something unexpected happened to our request: " + response.message());
-        }
-      }
-
-      @Override
-      public void onFailure(Call<MovieAPIResults> call, Throwable t) {
-        Log.e(TAG, t.getMessage());
-      }
-    });
-  }
 
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
@@ -111,11 +104,11 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
 
     MenuItem popular = menu.getItem(0);
     MenuItem top_rated = menu.getItem(1);
-    MenuItem favorite = menu.getItem(2  );
+    MenuItem favorite = menu.getItem(2);
 
 
     // Check the correct radio button in the menu.
-    switch(mSortOrder) {
+    switch (mSortOrder) {
       case FAVORITE:
         favorite.setChecked(true);
         break;
@@ -136,42 +129,28 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
   public boolean onOptionsItemSelected(MenuItem item) {
     Call<MovieAPIResults> call;
     SharedPreferences.Editor editor = mSharedPreferences.edit();
-    switch(item.getItemId()) {
+    item.setChecked(true);
+
+    switch (item.getItemId()) {
       case R.id.menu_item_popular:
-        toggleMenuOption(item);
         mSortOrder = NetworkUtils.POPULAR;
-        editor.putString(SORT_ORDER, mSortOrder);
-        editor.apply();
-        call = NetworkUtils.buildAPICall(mSortOrder);
-        callAPI(call);
-        return true;
+        break;
       case R.id.menu_item_top_rated:
-        toggleMenuOption(item);
         mSortOrder = NetworkUtils.TOP_RATED;
-        editor.putString(SORT_ORDER, mSortOrder);
-        editor.apply();
-        call = NetworkUtils.buildAPICall(mSortOrder);
-        callAPI(call);
-        return true;
+        break;
       case R.id.menu_item_favorite:
-        toggleMenuOption(item);
         mSortOrder = FAVORITE;
-        editor.putString(SORT_ORDER, mSortOrder);
-        editor.apply();
-        setupViewModel();
-        return true;
+        break;
       default:
         return false;
     }
+
+    editor.putString(SORT_ORDER, mSortOrder);
+    editor.apply();
+    setupViewModel();
+    return true;
   }
 
-  public void toggleMenuOption(MenuItem item) {
-    if (item.isChecked()) {
-      item.setChecked(false);
-    } else {
-      item.setChecked(true);
-    }
-  }
 
   @Override
   protected void onResume() {
@@ -184,7 +163,9 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
 
   public void setupViewModel() {
 
-    MainViewModel viewModel =  ViewModelProviders.of(this).get(MainViewModel.class);
+    MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+
     viewModel.getFavoriteMovies().observe(this, new Observer<List<FavoriteEntry>>() {
       @Override
       public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
@@ -197,23 +178,37 @@ public class MainActivity extends AppCompatActivity implements MovieAPIResults.D
             for (FavoriteEntry fave : favoriteEntries) {
               movieList.add(new MovieData(fave));
             }
-
-            final List<MovieData> movies = movieList;
-            mMovieAdapter.setMovies(movies);
-            mMovieAdapter.notifyDataSetChanged();
+            setAdapter(movieList);
           }
         }
       }
     });
 
+    viewModel.getTopRatedMovies().observe(this, new Observer<List<MovieData>>() {
+      @Override
+      public void onChanged(@Nullable List<MovieData> movieData) {
+        if (movieData != null && mSortOrder.contentEquals(NetworkUtils.TOP_RATED)) {
+          setAdapter(movieData);
+        }
+      }
+    });
 
-    Log.d(TAG, "Retrieving data from database");
-
+    viewModel.getPopularMovies().observe(this, new Observer<List<MovieData>>() {
+      @Override
+      public void onChanged(@Nullable List<MovieData> movieData) {
+        if (movieData != null && mSortOrder.contentEquals(NetworkUtils.POPULAR)) {
+          setAdapter(movieData);
+        }
+      }
+    });
   }
 
-  @Override
-  public void onMovieDataAcquired(List<MovieData> movies) {
+  public void setAdapter(List<MovieData> movies) {
     mMovieAdapter.setMovies(movies);
     mMovieAdapter.notifyDataSetChanged();
+    if (recyclerPosition != null) {
+      mRecyclerView.getLayoutManager().onRestoreInstanceState(recyclerPosition);
+    }
   }
+
 }

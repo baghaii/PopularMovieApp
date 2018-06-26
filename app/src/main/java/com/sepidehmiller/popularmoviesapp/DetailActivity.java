@@ -45,7 +45,6 @@ public class DetailActivity extends AppCompatActivity implements
 
   private static final String TAG = "DetailActivity";
   private static final String MOVIE_DATA = "MovieData";
-  private static final String SCROLL_POSITIONS = "ScrollPositions";
   private static final String FAVORITE = "favorite";
 
   private AppDatabase mDb;
@@ -86,7 +85,6 @@ public class DetailActivity extends AppCompatActivity implements
     mVideoRecyclerView = findViewById(R.id.video_recycler_view);
     mReviewRecyclerView = findViewById(R.id.review_recycler_view);
     mScrollView = findViewById(R.id.scrollView);
-
 
     Stetho.initializeWithDefaults(this);
 
@@ -131,31 +129,15 @@ public class DetailActivity extends AppCompatActivity implements
     }
   }
 
-  //How do we save scroll positions?
-  //https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putIntArray(SCROLL_POSITIONS,
-        new int[]{ mScrollView.getScrollX(), mScrollView.getScrollY()});
     outState.putBoolean(FAVORITE, mMovie.isFavorite() == 1);
   }
 
   @Override
-  protected void onRestoreInstanceState(Bundle savedInstanceState) {
+  protected void onRestoreInstanceState(final Bundle savedInstanceState) {
     super.onRestoreInstanceState(savedInstanceState);
-    final int[] position = savedInstanceState.getIntArray(SCROLL_POSITIONS);
-    if (position != null) {
-      mScrollView.post(new Runnable() {
-        @Override
-        public void run() {
-          mScrollView.scrollTo(position[0], position[1]);
-        }
-      });
-    }
-
-    boolean favorite = savedInstanceState.getBoolean(FAVORITE);
-    MenuItem item = findViewById(R.id.menu_item_favorite);
 
     if (savedInstanceState.getBoolean(FAVORITE)) {
       mMovie.setFavorite(1);
@@ -190,6 +172,7 @@ public class DetailActivity extends AppCompatActivity implements
     RecyclerView.ItemDecoration itemDecoration = new
         DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
     mReviewRecyclerView.addItemDecoration(itemDecoration);
+
   }
 
   public boolean onCreateOptionsMenu(Menu menu) {
