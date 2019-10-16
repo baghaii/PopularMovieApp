@@ -1,16 +1,8 @@
 package com.sepidehmiller.popularmoviesapp;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +13,16 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.facebook.stetho.Stetho;
 import com.sepidehmiller.popularmoviesapp.ReviewUtils.Review;
@@ -154,7 +156,7 @@ public class DetailActivity extends AppCompatActivity implements
 
     mVideoRecyclerView.setLayoutManager(videoLayoutManager);
     RecyclerView.ItemDecoration itemDecoration = new
-        DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
     mVideoRecyclerView.addItemDecoration(itemDecoration);
 
   }
@@ -247,8 +249,8 @@ public class DetailActivity extends AppCompatActivity implements
   public void callVideos(Call<VideoResults> call) {
     call.enqueue(new Callback<VideoResults>() {
       @Override
-      public void onResponse(Call<VideoResults> call, Response<VideoResults> response) {
-        if (response.message().contentEquals("OK")) {
+      public void onResponse(@NonNull Call<VideoResults> call, @NonNull Response<VideoResults> response) {
+        if (response.message().contentEquals("")) {
           Log.i(TAG, response.body().getVideoList().toString());
           onVideosAcquired(response.body().getVideoList());
         } else {
@@ -257,7 +259,7 @@ public class DetailActivity extends AppCompatActivity implements
       }
 
       @Override
-      public void onFailure(Call<VideoResults> call, Throwable t) {
+      public void onFailure(@NonNull Call<VideoResults> call, Throwable t) {
         Log.e(TAG, t.getMessage());
       }
     });
@@ -266,8 +268,8 @@ public class DetailActivity extends AppCompatActivity implements
   public void callReviews(Call<ReviewResults> call) {
     call.enqueue(new Callback<ReviewResults>() {
       @Override
-      public void onResponse(Call<ReviewResults> call, Response<ReviewResults> response) {
-        if (response.message().contentEquals("OK")) {
+      public void onResponse(@NonNull Call<ReviewResults> call, @NonNull Response<ReviewResults> response) {
+        if (response.message().contentEquals("")) {
           Log.i(TAG, response.body().getReviewList().toString());
           onReviewsAcquired(response.body().getReviewList());
         } else Log.e(TAG, response.message());

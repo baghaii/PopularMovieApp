@@ -6,10 +6,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-<android.support.constraint.ConstraintLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   tools:context=".DetailActivity">
@@ -110,7 +107,7 @@
     app:layout_constraintStart_toStartOf="@+id/video_label_textview"
     app:layout_constraintTop_toBottomOf="@+id/video_recycler_view"/>
 
-  <android.support.v7.widget.RecyclerView
+  <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/video_recycler_view"
     android:layout_width="0dp"
     android:layout_height="80dp"
@@ -122,7 +119,7 @@
     app:layout_constraintStart_toStartOf="@+id/review_recycler_view"
     app:layout_constraintTop_toBottomOf="@+id/synopsisTextView"/>
 
-  <android.support.v7.widget.RecyclerView
+  <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/review_recycler_view"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
@@ -136,5 +133,5 @@
     app:layout_constraintStart_toEndOf="@+id/imageView"
     app:layout_constraintTop_toBottomOf="@+id/review_label_textview"/>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

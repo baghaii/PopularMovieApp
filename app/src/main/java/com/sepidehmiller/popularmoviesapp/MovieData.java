@@ -1,11 +1,12 @@
 package com.sepidehmiller.popularmoviesapp;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.PrimaryKey;
+
 import android.os.Parcel;
 import android.os.Parcelable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -17,7 +18,7 @@ import com.google.gson.annotations.SerializedName;
 public class MovieData implements Parcelable {
 
   @Ignore
-  private static final String BASE_PATH = "http://image.tmdb.org/t/p/w185/";
+  private static final String BASE_PATH = "https://image.tmdb.org/t/p/w185/";
 
   @PrimaryKey
   private int id;

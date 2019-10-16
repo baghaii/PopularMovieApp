@@ -1,11 +1,12 @@
 package com.sepidehmiller.popularmoviesapp;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.sepidehmiller.popularmoviesapp.database.AppDatabase;
 
@@ -33,7 +34,7 @@ public class MainViewModel extends AndroidViewModel {
       @Override
       public void onResponse(Call<MovieAPIResults> call, Response<MovieAPIResults> response) {
 
-        if (response.message().contentEquals("OK")) {
+        if (response.message().contentEquals("")) {
           popularMovies.setValue(response.body().getMovies());
         } else {
           Log.e(TAG, "Something unexpected happened to our request: " + response.message());
@@ -52,7 +53,7 @@ public class MainViewModel extends AndroidViewModel {
       @Override
       public void onResponse(Call<MovieAPIResults> call, Response<MovieAPIResults> response) {
 
-        if (response.message().contentEquals("OK")) {
+        if (response.message().contentEquals("")) {
           topRatedMovies.setValue(response.body().getMovies());
         } else {
           Log.e(TAG, "Something unexpected happened to our request: " + response.message());

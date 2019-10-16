@@ -4,15 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,7 +23,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
     private List<MovieData> mMovies;
     Context mContext;
 
-    public MovieAdapter(Context context, ArrayList<MovieData> movies) {
+    public MovieAdapter(Context context, List<MovieData> movies) {
       mMovies = movies;
       mContext = context;
     }
@@ -39,7 +39,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         public void onClick(View view, int i) {
           Intent intent = new Intent(parent.getContext(), DetailActivity.class);
           intent.putExtra(MOVIE_DATA, mMovies.get(i));
-          mContext.startActivity(intent);
+          parent.getContext().startActivity(intent);
         }
       };
 
@@ -62,7 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
     }
 
 
-  public class MovieHolder extends RecyclerView.ViewHolder  implements View.OnClickListener {
+  public class MovieHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     private final ImageButton mImageButton;
     private RecyclerViewClickListener mRecyclerViewClickListener;
 

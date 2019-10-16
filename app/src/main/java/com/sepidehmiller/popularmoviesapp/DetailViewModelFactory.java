@@ -1,7 +1,8 @@
 package com.sepidehmiller.popularmoviesapp;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
+
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.sepidehmiller.popularmoviesapp.database.AppDatabase;
 

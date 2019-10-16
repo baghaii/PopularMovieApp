@@ -8,8 +8,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkUtils {
-  private static final String API_KEY = "insert api key here";
-  private static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
+  private static final String API_KEY = "c9df7bee96e71fa5a46367f28f9a4a70";
+  private static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
 
   public static final String POPULAR = "popular";
   public static final String TOP_RATED = "top_rated";
@@ -42,5 +42,5 @@ public class NetworkUtils {
     Call<ReviewResults> call = sMovieAPIInterface.getReviewData(videoId, API_KEY);
     return call;
   }
-  
+
 }

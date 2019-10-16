@@ -1,8 +1,6 @@
 package com.sepidehmiller.popularmoviesapp.ReviewUtils;
 
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.StyleSpan;
@@ -10,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.sepidehmiller.popularmoviesapp.R;
 
